@@ -7,9 +7,11 @@ repository (which is a fork of [github/docs](https://github.com/github/docs));
 open the file directly in a browser, or serve `profile/` as a static site (e.g.
 via GitHub Pages) to publish it.
 
-Content is sourced from the supplied CV, certifications (PMP, Project Management
-Essentials, Google Partner, Meta Ads, Certified Scrum Master, Claude 101, Canva
-Essentials), and a detailed marketing portfolio: a seven-category Selected Work
+Content is sourced from the supplied CV, certifications (PMP, Program Management
+Fundamentals, Project Management Essentials, Google Partner, Google AI
+Fundamentals, Google AI for Brainstorming & Planning, Meta Ads, GenAI for Social
+Media Marketing, Certified Scrum Master, Claude 101, Canva Essentials), and a
+detailed marketing portfolio: a seven-category Selected Work
 section (event, CSR, digital, e-commerce, PR/compliance, creative, AI), career
 highlights (incl. U-POWER 2025 national 1st runner-up), the INNOFRESH brands
 (Say Ohh!, Zecret Spoon, Pai Linn, Fresh O', Fresh O' Gold), and events
