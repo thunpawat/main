@@ -113,6 +113,23 @@
     text-wrap: balance;
   }
 
+  .section-intro {
+    font-size: clamp(18px, 2vw, 21px);
+    line-height: 1.4;
+    color: var(--fg-muted);
+    max-width: 52ch;
+    margin: 18px auto 0;
+    text-wrap: balance;
+  }
+
+  .subsection-title {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-align: center;
+    margin: 84px 0 0;
+  }
+
   /* ---------- Hero ---------- */
 
   .hero { padding: 120px 0 100px; }
@@ -235,6 +252,66 @@
   }
 
   .section--grey .tag { background: var(--card); border: 1px solid var(--card-border); }
+
+  /* ---------- Selected work / brands ---------- */
+
+  .brand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 44px;
+  }
+
+  .brand-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 26px 24px;
+    text-decoration: none;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease;
+  }
+
+  .brand-card:hover { transform: translateY(-3px); }
+
+  .brand-name {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+
+  .brand-cta { font-size: 15px; color: var(--accent); }
+
+  /* ---------- Link groups (references & assets) ---------- */
+
+  .link-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 40px;
+    margin-top: 44px;
+    text-align: left;
+  }
+
+  .link-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .link-list a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  .link-list a:hover { text-decoration: underline; }
 
   /* ---------- Certifications ---------- */
 
@@ -364,14 +441,23 @@
     font-size: 17px;
   }
 
-  .foot-note {
-    margin-top: 40px;
-    font-size: 13px;
-    color: var(--fg-muted);
-    text-align: center;
+  /* ---------- Footer bar ---------- */
+
+  .footer-bar {
+    background: var(--bg-alt);
+    border-top: 1px solid var(--rule);
+    padding: 34px 0;
   }
 
-  a:focus-visible, .btn:focus-visible, .tag:focus-visible {
+  .footer-bar p {
+    margin: 4px 0;
+    font-size: 12px;
+    color: var(--fg-muted);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  a:focus-visible, .btn:focus-visible, .tag:focus-visible, .brand-card:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 3px;
     border-radius: 6px;
@@ -396,7 +482,7 @@
       <p class="thai-name">ธันปวัฒน์ เตชาสุนทรสกุล — also known as Maggi</p>
       <div class="cta-row">
         <a class="btn" href="#contact">Get in touch</a>
-        <a class="link" href="#certifications">See credentials</a>
+        <a class="link" href="#work">View selected work</a>
       </div>
     </div>
     <div class="wrap stats">
@@ -409,8 +495,8 @@
         <div class="label">Sectors — corporate / SME / agency</div>
       </div>
       <div class="stat">
-        <div class="num">2×</div>
-        <div class="label">Gold medal graduate</div>
+        <div class="num">5</div>
+        <div class="label">Brands shaped</div>
       </div>
       <div class="stat">
         <div class="num">7</div>
@@ -467,7 +553,67 @@
     </div>
   </section>
 
-  <section class="section section--grey" id="certifications">
+  <section class="section section--grey" id="work">
+    <div class="wrap wrap--narrow center section-head">
+      <p class="eyebrow">Selected Work</p>
+      <h2 class="section-title">Brands &amp; events I've shaped.</h2>
+      <p class="section-intro">Brand identity, CI systems, and communication assets across a portfolio of consumer brands — plus event marketing and activations at THAIFEX–Anuga Asia and beyond.</p>
+    </div>
+    <div class="wrap">
+      <div class="brand-grid">
+        <a class="brand-card" href="https://drive.google.com/drive/folders/1SvfWAdFsLLFBBiHkWwvXHKpjafShOqJr" target="_blank" rel="noopener noreferrer">
+          <span class="brand-name">Say Ohh!</span>
+          <span class="brand-cta">Brand &amp; CI assets ›</span>
+        </a>
+        <a class="brand-card" href="https://drive.google.com/drive/folders/1UJEdLrVTbAwqZclv_9vFPMmcjApInRWN" target="_blank" rel="noopener noreferrer">
+          <span class="brand-name">Zecret Spoon</span>
+          <span class="brand-cta">Brand &amp; CI assets ›</span>
+        </a>
+        <a class="brand-card" href="https://drive.google.com/drive/folders/10fkINTwnY1odYJAPCpmg7O15HOqK77pV" target="_blank" rel="noopener noreferrer">
+          <span class="brand-name">Pai Linn</span>
+          <span class="brand-cta">Brand &amp; CI assets ›</span>
+        </a>
+        <a class="brand-card" href="https://drive.google.com/drive/folders/1hhKDdxywxxwapozS9Lw3ui4mRv4cDU1E" target="_blank" rel="noopener noreferrer">
+          <span class="brand-name">Fresh O'</span>
+          <span class="brand-cta">Brand &amp; CI assets ›</span>
+        </a>
+        <a class="brand-card" href="https://drive.google.com/drive/folders/1i0lQs9O-Izb7ADeAlqJdSzG-VUuTxmDS" target="_blank" rel="noopener noreferrer">
+          <span class="brand-name">Fresh O' Gold</span>
+          <span class="brand-cta">Brand &amp; CI assets ›</span>
+        </a>
+      </div>
+
+      <h3 class="subsection-title">References &amp; assets</h3>
+      <div class="link-groups">
+        <div class="link-group">
+          <p class="col-label">Events</p>
+          <ul class="link-list">
+            <li><a href="https://thaifex-anuga.com/" target="_blank" rel="noopener noreferrer">THAIFEX – Anuga Asia</a></li>
+            <li><a href="http://thaifex.thaichamber.org/THAIFEX/#/login" target="_blank" rel="noopener noreferrer">THAIFEX exhibitor portal</a></li>
+            <li><a href="https://www.impact.co.th/" target="_blank" rel="noopener noreferrer">IMPACT Exhibition Center</a></li>
+          </ul>
+        </div>
+        <div class="link-group">
+          <p class="col-label">Product &amp; media</p>
+          <ul class="link-list">
+            <li><a href="https://drive.google.com/drive/folders/16qojWkqs8lRqEhYdqXs-79JVRDp22yHq" target="_blank" rel="noopener noreferrer">Product &amp; media library</a></li>
+          </ul>
+        </div>
+        <div class="link-group">
+          <p class="col-label">Event photos</p>
+          <ul class="link-list">
+            <li><a href="https://photos.app.goo.gl/Vxex5xACVKwo6C6i7" target="_blank" rel="noopener noreferrer">Event album 1</a></li>
+            <li><a href="https://photos.app.goo.gl/MzWbPz8s7ZdiNGsz9" target="_blank" rel="noopener noreferrer">Event album 2</a></li>
+            <li><a href="https://photos.app.goo.gl/VQK9R8tAua4fGQY57" target="_blank" rel="noopener noreferrer">Event album 3</a></li>
+            <li><a href="https://photos.app.goo.gl/XogJTPr8nn98ui1K9" target="_blank" rel="noopener noreferrer">Event album 4</a></li>
+            <li><a href="https://photos.app.goo.gl/iy2x2dRWCwsLRthEA" target="_blank" rel="noopener noreferrer">Event album 5</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="certifications">
     <div class="wrap wrap--narrow center section-head">
       <p class="eyebrow">Credentials</p>
       <h2 class="section-title">Certified across the stack.</h2>
@@ -513,7 +659,7 @@
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section--grey">
     <div class="wrap wrap--narrow center section-head">
       <p class="eyebrow">Background</p>
       <h2 class="section-title">Education &amp; languages.</h2>
@@ -548,19 +694,25 @@
     </div>
   </section>
 
-  <section class="section section--grey" id="contact">
+  <section class="section" id="contact">
     <div class="wrap wrap--narrow center">
       <h2 class="section-title">Let's talk growth.</h2>
       <div class="contact-list">
-        <a href="mailto:maggi-thunpawat@outlook.com">maggi-thunpawat@outlook.com</a>
+        <a href="mailto:thunpawat@t-thun-t.com">thunpawat@t-thun-t.com</a>
         <a href="tel:+66805566251">+66 80-556-6251</a>
         <a href="https://www.linkedin.com/in/maggi-thunpawat" target="_blank" rel="noopener noreferrer">linkedin.com/in/maggi-thunpawat</a>
         <span class="contact-based">Based in Saraburi, Thailand</span>
       </div>
-      <p class="foot-note">Available for marketing &amp; digital strategy consulting engagements.</p>
     </div>
   </section>
 </main>
+
+<footer class="footer-bar">
+  <div class="wrap">
+    <p>Thunpawat Techasoontornsakun (Maggi) — Marketing &amp; Digital Strategy Consultant</p>
+    <p>Available for marketing &amp; digital strategy consulting engagements.</p>
+  </div>
+</footer>
 
 </body>
 </html>
