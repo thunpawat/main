@@ -5,7 +5,7 @@ versions:
   fpt: '*'
   ghes: '*'
   ghec: '*'
-type: overview
+contentType: get-started
 topics:
   - Repositories
   - Dependencies
@@ -124,7 +124,7 @@ Push protection for users automatically protects you from accidentally committin
 
 ## Available with {% data variables.product.prodname_GH_secret_protection %}
 
-For accounts on {% ifversion fpt or ghec %}{% data variables.product.prodname_team %} and {% data variables.product.prodname_ghe_cloud %}{% endif %}{% ifversion ghes %} {% data variables.product.prodname_ghe_server %}{% endif %}, you can access additional security features when you purchase **{% data variables.product.prodname_GH_secret_protection %}**.  
+For accounts on {% ifversion fpt or ghec %}{% data variables.product.prodname_team %} and {% data variables.product.prodname_ghe_cloud %}{% endif %}{% ifversion ghes %} {% data variables.product.prodname_ghe_server %}{% endif %}, you can access additional security features when you purchase **{% data variables.product.prodname_GH_secret_protection %}**.
 
 {% data variables.product.prodname_GH_secret_protection %} includes features that help you detect and prevent secret leaks, such as {% data variables.product.prodname_secret_scanning %} and push protection.
 
@@ -162,13 +162,9 @@ Push protection proactively scans your code, and any repository contributors' co
 
 {% data reusables.advanced-security.available-for-public-repos %}
 
-{% ifversion push-protection-delegated-bypass %}
-
 ### Delegated bypass for push protection
 
 Delegated bypass for push protection lets you control which individuals, roles and teams can bypass push protection, and implements a review and approval cycle for pushes containing secrets. For more information, see [AUTOTITLE](/code-security/secret-scanning/using-advanced-secret-scanning-and-push-protection-features/delegated-bypass-for-push-protection/about-delegated-bypass-for-push-protection).
-
-{% endif %}
 
 ### Custom patterns
 
@@ -183,7 +179,7 @@ Security overview allows you to review the overall security landscape of your or
 
 ## Available with {% data variables.product.prodname_GH_code_security %}
 
-For accounts on {% ifversion fpt or ghec %}{% data variables.product.prodname_team %} and {% data variables.product.prodname_ghe_cloud %}{% endif %}{% ifversion ghes %} {% data variables.product.prodname_ghe_server %}{% endif %}, you can access additional security features when you purchase **{% data variables.product.prodname_GH_code_security %}**.  
+For accounts on {% ifversion fpt or ghec %}{% data variables.product.prodname_team %} and {% data variables.product.prodname_ghe_cloud %}{% endif %}{% ifversion ghes %} {% data variables.product.prodname_ghe_server %}{% endif %}, you can access additional security features when you purchase **{% data variables.product.prodname_GH_code_security %}**.
 
 {% data variables.product.prodname_GH_code_security %} includes features that help you find and fix vulnerabilities, like {% data variables.product.prodname_code_scanning %}, premium {% data variables.product.prodname_dependabot %} features, and dependency review.
 

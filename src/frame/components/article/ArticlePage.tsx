@@ -21,7 +21,9 @@ import { Breadcrumbs } from '@/frame/components/page-header/Breadcrumbs'
 import { Link } from '@/frame/components/Link'
 import { useTranslation } from '@/languages/components/useTranslation'
 import { LinkPreviewPopover } from '@/links/components/LinkPreviewPopover'
-import { ReplaceDomain } from '@/links/components/replace-domain'
+import { UtmPreserver } from '@/frame/components/UtmPreserver'
+import { JourneyTrackCard, JourneyTrackNav } from '@/journeys/components'
+import { ViewMarkdownButton } from './ViewMarkdownButton'
 
 const ClientSideRefresh = dynamic(() => import('@/frame/components/ClientSideRefresh'), {
   ssr: false,
@@ -42,10 +44,13 @@ export const ArticlePage = () => {
     productVideoUrl,
     miniTocItems,
     currentLearningTrack,
+    currentJourneyTrack,
     supportPortalVaIframeProps,
     currentLayout,
+    currentPath,
   } = useArticleContext()
   const isLearningPath = !!currentLearningTrack?.trackName
+  const isJourneyTrack = !!currentJourneyTrack?.trackId
   const { t } = useTranslation(['pages'])
 
   const introProp = (
@@ -71,7 +76,9 @@ export const ArticlePage = () => {
 
   const toc = (
     <>
+      <ViewMarkdownButton currentPath={currentPath} />
       {isLearningPath && <LearningTrackCard track={currentLearningTrack} />}
+      {isJourneyTrack && <JourneyTrackCard journey={currentJourneyTrack} />}
       {miniTocItems.length > 1 && <MiniTocs miniTocItems={miniTocItems} />}
     </>
   )
@@ -102,9 +109,9 @@ export const ArticlePage = () => {
   return (
     <DefaultLayout>
       <LinkPreviewPopover />
+      <UtmPreserver />
       {isDev && <ClientSideRefresh />}
       {router.pathname.includes('/rest/') && <RestRedirect />}
-      <ReplaceDomain />
       {currentLayout === 'inline' ? (
         <>
           <ArticleInlineLayout
@@ -120,6 +127,11 @@ export const ArticlePage = () => {
           {isLearningPath ? (
             <div className="container-lg mt-4 px-3">
               <LearningTrackNav track={currentLearningTrack} />
+            </div>
+          ) : null}
+          {isJourneyTrack ? (
+            <div className="container-lg mt-4 px-3">
+              <JourneyTrackNav context={currentJourneyTrack} />
             </div>
           ) : null}
         </>
@@ -146,6 +158,11 @@ export const ArticlePage = () => {
           {isLearningPath ? (
             <div className="mt-4">
               <LearningTrackNav track={currentLearningTrack} />
+            </div>
+          ) : null}
+          {isJourneyTrack ? (
+            <div className="container-lg mt-4 px-3">
+              <JourneyTrackNav context={currentJourneyTrack} />
             </div>
           ) : null}
         </div>

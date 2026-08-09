@@ -4,6 +4,7 @@ labels:
   - enterprise deprecation
   - priority-1
   - time sensitive
+  - workflow-generated
 ---
 
 # Deprecation steps for GHES releases
@@ -61,38 +62,53 @@ All previously archived content lives in its own repository. For example, GHES 3
 
 1. Update all translation directories to the latest `main` branch.
 
-1. Hide search component temporarily while scraping docs in `src/search/components/Search.tsx`, by adding the `visually-hidden` class to the `form` element:
+1. Hide search components temporarily while scraping docs by adding the `visually-hidden` class to the search components:
 
-    ```javascript
-    return (
-      <div data-testid="search">
-        <div className="position-relative z-2">
-          <form
-            role="search"
-            className="width-full d-flex visually-hidden"
-    ```
+   **In `src/search/components/input/SearchBarButton.tsx`**, wrap the return statement content:
+
+   ```javascript
+   return (
+     <div className="visually-hidden">
+       {/* existing search button content */}
+     </div>
+   );
+   ```
+
+   **In `src/search/components/input/SearchOverlayContainer.tsx`**, wrap the return statement content:
+
+   ```javascript
+   if (isSearchOpen) {
+     return (
+       <div className="visually-hidden">
+         <SearchOverlay
+         // ... existing props
+         />
+       </div>
+     );
+   }
+   ```
 
 1. Ensure your build is up to date:
 
-    ```shell
-    npm run build
-    ```
+   ```shell
+   npm run build
+   ```
 
 1. Do a dry run by scraping a small amount of files to test locally on your machine. This command does not overwrite the references to asset files so they will render on your machine.
 
-    ```shell
-    npm run deprecate-ghes-archive -- --dry-run --local-dev
-    ```
+   ```shell
+   npm run deprecate-ghes-archive -- --dry-run --local-dev
+   ```
 
 1. Navigate to the scraped files directory (`tmpArchivalDir_<VERSION_TO_DEPRECATE>`) inside your docs-internal checkout. Open a few HTML files and ensure they render and drop-down pickers work correctly.
 
-1. If the dry-run looks good, scrape all content files. This will take about 20-30 minutes. **Note:**  This will overwrite the directory that was previously generated with new files. You can also create a specific output directory using the `--output` flag.
+1. If the dry-run looks good, scrape all content files. This will take about 20-30 minutes. **Note:** This will overwrite the directory that was previously generated with new files. You can also create a specific output directory using the `--output` flag.
 
-    ```shell
-    npm run deprecate-ghes-archive
-    ```
+   ```shell
+   npm run deprecate-ghes-archive
+   ```
 
-1. Revert changes to `src/search/components/Search.tsx`.
+1. Revert changes to `src/search/components/input/SearchBarButton.tsx` and `src/search/components/input/SearchOverlayContainer.tsx`.
 
 1. Check in any change to `src/ghes-releases/lib/enterprise-dates.json`.
 
@@ -110,9 +126,9 @@ All previously archived content lives in its own repository. For example, GHES 3
 
 1. In your `docs-internal` checkout, create a new branch: `git checkout -b deprecate-<version>`.
 
-1. In your `docs-internal` checkout, edit `src/versions/lib/enterprise-server-releases.js` by removing the version number to be deprecated from the `supported` array and move it to the `deprecatedWithFunctionalRedirects` array.
+1. In your `docs-internal` checkout, edit `src/versions/lib/enterprise-server-releases.ts` by removing the version number to be deprecated from the `supported` array and move it to the `deprecatedWithFunctionalRedirects` array.
 
-1. Deprecate the automated pipelines data files:
+1. Deprecate the automated pipelines data files (including audit logs, REST, GraphQL, webhooks, GitHub Apps, CodeQL CLI, and secret scanning):
 
    ```shell
    npm run deprecate-ghes -- pipelines
@@ -120,9 +136,9 @@ All previously archived content lives in its own repository. For example, GHES 3
 
 1. Remove deprecated content files and update the versions frontmatter:
 
-    ```shell
+   ```shell
    npm run deprecate-ghes -- content
-    ```
+   ```
 
 1. Remove deprecated Liquid from content and data files. **Note:** The previous step to update content file frontmatter must have run successfully for this step to work because the updated frontmatter is used to determine file versions.
 
@@ -155,9 +171,10 @@ All previously archived content lives in its own repository. For example, GHES 3
    ```
 
 1. Poke around several deprecated pages by navigating to `docs.github.com/enterprise/<DEPRECATED VERSION>`, and ensure that:
+
    - Stylesheets are working properly
    - Images are rendering properly
-   - The search functionality was disabled
+   - The search functionality was disabled during scraping
    - Look at any console errors to ensure that no new unexpected errors were introduced. You can look at previous errors by viewing a previously completed deprecation page.
    - You should see a banner on the top of every deprecated page with the date that the version was deprecated.
    - You should see a banner at the top of every page for the oldes currently supported version with the date that it will be deprecated in the ~3 months.

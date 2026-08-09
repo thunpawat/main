@@ -50,7 +50,7 @@ program
       `The source repositories to get the dereferenced files from. When the source repo is ${REST_API_DESCRIPTION_ROOT}, the bundler is not run to generate the source dereferenced OpenAPI files because the ${REST_API_DESCRIPTION_ROOT} repo already contains them.`,
     )
       .choices(['github', REST_API_DESCRIPTION_ROOT, MODELS_GATEWAY_ROOT])
-      .default('github', 'github'),
+      .default(['github', MODELS_GATEWAY_ROOT]),
   )
   .option(
     '-v --versions [VERSIONS...]',
@@ -114,10 +114,7 @@ async function main() {
   // so that we don't spend time generating data files for them.
   if (sourceRepos.includes(REST_API_DESCRIPTION_ROOT)) {
     const derefDir = await readdir(TEMP_OPENAPI_DIR)
-    // TODO: After migrating all-version.js to TypeScript, we can remove the type assertion
-    const currentOpenApiVersions = Object.values(allVersions).map(
-      (elem) => (elem as any).openApiVersionName,
-    )
+    const currentOpenApiVersions = Object.values(allVersions).map((elem) => elem.openApiVersionName)
 
     for (const schema of derefDir) {
       // if the schema does not start with a current version name, delete it
@@ -236,13 +233,13 @@ async function validateInputParameters(): Promise<void> {
 
   // The `--decorate-only` option cannot be used
   // with the `--include-deprecated` or `--include-unpublished` options
-  if ((includeDeprecated || includeUnpublished) && !sourceRepos.include('github')) {
+  if ((includeDeprecated || includeUnpublished) && !sourceRepos.includes('github')) {
     const errorMsg = `🛑 You cannot use the decorate-only option with  include-unpublished or include-deprecated because the include-unpublished and include-deprecated options are only available when running the bundler. The decorate-only option skips running the bundler.\nPlease reach out to #docs-engineering if a new use case should be supported.`
     throw new Error(errorMsg)
   }
 
   // Check that the source repo exists.
-  for (let sourceRepoDirectory of sourceRepoDirectories) {
+  for (const sourceRepoDirectory of sourceRepoDirectories) {
     if (!existsSync(sourceRepoDirectory)) {
       const errorMsg =
         sourceRepoDirectory === 'github' || sourceRepoDirectory === GITHUB_REP_DIR
@@ -261,7 +258,7 @@ async function validateInputParameters(): Promise<void> {
 // team that owns the data we consume. This function translates the version
 // names to use the names in the src/<pipeline>/lib/config.json file.
 // The names in the config.json file maps the incoming version name to
-// the short name of the version defined in lib/allVersions.js.
+// the short name of the version defined in lib/allVersions.ts.
 // This function also translates calendar-date format from .2022-11-28 to
 // -2022-11-28
 export async function normalizeDataVersionNames(sourceDirectory: string): Promise<void> {

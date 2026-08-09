@@ -1,7 +1,7 @@
 import type { Response, NextFunction } from 'express'
 
-import statsd from '@/observability/lib/statsd.js'
-import { noCacheControl, defaultCacheControl } from '@/frame/middleware/cache-control.js'
+import statsd from '@/observability/lib/statsd'
+import { noCacheControl, defaultCacheControl } from '@/frame/middleware/cache-control'
 import { ExtendedRequest } from '@/types'
 
 const STATSD_KEY = 'middleware.handle_invalid_querystrings'
@@ -37,7 +37,11 @@ const RECOGNIZED_KEYS_BY_ANY = new Set([
   'search-overlay-ask-ai',
   // The drop-downs on "Webhook events and payloads"
   'actionType',
-  // Used by the tracking middleware
+  // Landing page article grid filters
+  'articles-category',
+  'articles-filter',
+  'articles-page',
+  // Legacy domain tracking parameter (no longer processed but still recognized)
   'ghdomain',
   // UTM campaign tracking
   'utm_source',
@@ -45,6 +49,8 @@ const RECOGNIZED_KEYS_BY_ANY = new Set([
   'utm_campaign',
   // Used by experiments
   'feature',
+  // Used to track API requests from external sources
+  'client_name',
 ])
 
 export default function handleInvalidQuerystrings(
@@ -55,6 +61,30 @@ export default function handleInvalidQuerystrings(
   const { method, query, path } = req
   if (method === 'GET' || method === 'HEAD') {
     const originalKeys = Object.keys(query)
+
+    // Check for invalid query string patterns (square brackets, etc.)
+    const invalidKeys = originalKeys.filter((key) => {
+      // Check for square brackets which are invalid
+      return key.includes('[') || key.includes(']')
+    })
+
+    if (invalidKeys.length > 0) {
+      noCacheControl(res)
+      const invalidKey = invalidKeys[0].replace(/\[.*$/, '') // Get the base key name
+      res.status(400).send(`Invalid query string key (${invalidKey})`)
+
+      const tags = [
+        'response:400',
+        'reason:invalid-brackets',
+        `url:${req.url}`,
+        `path:${req.path}`,
+        `keys:${originalKeys.length}`,
+      ]
+      statsd.increment(STATSD_KEY, 1, tags)
+
+      return
+    }
+
     let keys = originalKeys.filter((key) => !RECOGNIZED_KEYS_BY_ANY.has(key))
     if (keys.length > 0) {
       // Before we judge the number of query strings, strip out all the ones
@@ -113,7 +143,9 @@ export default function handleInvalidQuerystrings(
       }
       defaultCacheControl(res)
       const sp = new URLSearchParams(query as any)
-      keys.forEach((key) => sp.delete(key))
+      for (const key of keys) {
+        sp.delete(key)
+      }
       let newURL = req.path
       if (sp.toString()) newURL += `?${sp}`
 

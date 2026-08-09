@@ -1,8 +1,8 @@
-#name: Stale
+Sharra-writes-stale-testingname: Stale check for stalled pull requests in the docs-internal repository
 
-# **What it does**: Close issues and pull requests after no updates for 365 days.
-# **Why we have it**: We want to manage our queue of issues and pull requests.
-# **Who does it impact**: Everyone that works on docs or docs-internal.
+# **What it does**: Identifies pull requests that have been inactive for 30 days.
+# **Why we have it**: We want to avoid pull requests that are stalled and not being reviewed.
+# **Who does it impact**: Everyone that works in the internal repository.
 
 #on:
   #schedule:
@@ -44,7 +44,10 @@
 name: 'Marks stale issues and PRs'
 on:
   schedule:
-    - cron: '20 16 * * *' # Run every day at 16:20 UTC / 8:20 PST
+    - cron: '20 16 * * 1' # Run each Monday at 16:20 UTC / 8:20 PST
+  push:
+    paths:
+      - .github/workflows/stale.yml
 
 permissions:
   contents: read

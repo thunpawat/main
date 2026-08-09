@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
-import { SURROGATE_ENUMS } from '@/frame/middleware/set-fastly-surrogate-key.js'
-import { get } from '@/tests/helpers/e2etest.js'
+import { SURROGATE_ENUMS } from '@/frame/middleware/set-fastly-surrogate-key'
+import { get } from '@/tests/helpers/e2etest'
 
 describe('honeypotting', () => {
   test('any GET with survey-vote and survey-token query strings is 400', async () => {
@@ -71,7 +71,6 @@ describe('index.md and .md suffixes', () => {
     }
   })
 
-  // TODO-ARTICLEAPI: unskip tests or replace when ready to ship article API
   test('any URL that ends with /.md redirects', async () => {
     // With language prefix
     {

@@ -99,8 +99,9 @@ The table below summarizes the availability of {% data variables.product.prodnam
 | Copilot secret scanning  | {% octicon "x" aria-label="No" %} | {% octicon "x" aria-label="No" %} | {% octicon "check" aria-label="Yes" %} |
 |{% endif %}|
 | Custom patterns   | {% octicon "x" aria-label="No" %} | {% octicon "x" aria-label="No" %} | {% octicon "check" aria-label="Yes" %} |
-|{% ifversion push-protection-delegated-bypass %}|
 | Delegated bypass for push protection    | {% octicon "x" aria-label="No" %} | {% octicon "x" aria-label="No" %} | {% octicon "check" aria-label="Yes" %} |
+|{% ifversion security-campaigns-secrets %}|
+| Security campaigns | {% octicon "x" aria-label="No" %} | {% octicon "x" aria-label="No" %} | {% octicon "check" aria-label="Yes" %} |
 |{% endif %}|
 | Security overview   | {% octicon "x" aria-label="No" %} | {% octicon "x" aria-label="No" %} | {% octicon "check" aria-label="Yes" %} |
 
@@ -132,7 +133,9 @@ A {% data variables.product.prodname_GHAS %} license provides the following addi
 
 ## Run an assessment of your organization's exposure to secret leaks
 
-Organizations on {% data variables.product.prodname_team %} and {% data variables.product.prodname_enterprise %} can run a free report to scan the code in the organization for leaked secrets. This can help you understand the current exposure of repositories in your organization to leaked secrets, as well as help you see how many existing secret leaks could have been prevented by {% data variables.product.prodname_GH_secret_protection %}. See [AUTOTITLE](/code-security/securing-your-organization/understanding-your-organizations-exposure-to-leaked-secrets/about-secret-risk-assessment).{% endif %}{% else %}{% endif %}
+{% ifversion secret-risk-assessment %}{% data variables.secret-scanning.secret-risk-assessment-cta-product %}{% endif %}
+
+Organizations on {% data variables.product.prodname_team %} and {% data variables.product.prodname_enterprise %} can run a free report to scan the code in the organization for leaked secrets. This can help you understand the current exposure of repositories in your organization to leaked secrets, as well as help you see how many existing secret leaks could have been prevented by {% data variables.product.prodname_GH_secret_protection %}.{% endif %}{% else %}{% endif %}
 
 ## Deploying {% ifversion ghas-products %}{% data variables.product.prodname_GH_code_security %} and {% data variables.product.prodname_GH_secret_protection %}{% else %}{% data variables.product.prodname_GHAS %} in your enterprise{% endif %}
 
@@ -140,7 +143,7 @@ To learn about what you need to know to plan your deployment of {% ifversion gha
 
 ## Enabling features
 
-{% ifversion ghes %}
+{% ifversion ghes < 3.15 %}
 A site administrator must enable {% data variables.product.prodname_AS %} for {% data variables.location.product_location %} before you can use these features. See [AUTOTITLE](/admin/code-security/managing-github-advanced-security-for-your-enterprise).
 {% endif %}
 
@@ -150,7 +153,7 @@ A site administrator must enable {% data variables.product.prodname_AS %} for {%
 
 {% ifversion security-configurations %}{% else %}Once your system is set up, you can enable and disable these features at the organization or repository level. See [AUTOTITLE](/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/managing-security-and-analysis-settings-for-your-organization) and [AUTOTITLE](/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-security-and-analysis-settings-for-your-repository).{% endif %}
 
-If you are on a {% data variables.product.prodname_team %} or {% data variables.product.prodname_enterprise %} plan, license use for the entire team or  enterprise is shown on your license page. See [AUTOTITLE](/billing/managing-billing-for-your-products/managing-billing-for-github-advanced-security/viewing-your-github-advanced-security-usage).
+If you are on a {% data variables.product.prodname_team %} or {% data variables.product.prodname_enterprise %} plan, license use for the entire team or enterprise is shown on your license page. {% ifversion fpt or ghec %}See [AUTOTITLE](/billing/managing-billing-for-your-products/managing-billing-for-github-advanced-security/viewing-your-github-advanced-security-usage).{% endif %}
 
 {% ifversion copilot-chat-ghas-alerts %}
 

@@ -21,15 +21,16 @@ Before configuring the backup service, ensure you have:
 
 To ensure reliable and performant backups, your storage must meet the following requirements:
 
-* **Capacity:** Allocate at least five times the amount of storage used by your primary {% data variables.product.github %} appliance disk. This accounts for historical snapshots and future growth.
+* **Capacity:** Allocate at least five times the amount of storage used by your primary {% data variables.product.github %} appliance data disk. This accounts for historical snapshots and future growth.
 * **Filesystem support:** The backup service uses hard links for efficient storage, and your {% data variables.product.github %} instance uses symbolic links. The backup target must support both symbolic and hard links, and it must use a case-sensitive filesystem to prevent conflicts.
 
   You can test whether your filesystem supports hardlinking symbolic links by running:
 
     ```shell
-    touch file
-    ln -s file symlink
-    ln symlink hardlink
+    cd /data/backup
+    sudo touch file
+    sudo ln -s file symlink
+    sudo ln symlink hardlink
     ls -la
     ```
 
@@ -62,14 +63,29 @@ If you're using a dedicated block device as your backup target, you need to init
 
     >[!WARNING] This command will permanently erase all data on the specified device. Double-check the device name and back up any important data before proceeding.
 
+    {% ifversion ghes > 3.17 %}
+
     ```shell
     ghe-storage-init-backup /dev/YOUR_DEVICE_NAME
     ```
 
+    {% else %}
+
+    ```shell
+    /usr/local/share/enterprise/ghe-storage-init-backup /dev/YOUR_DEVICE_NAME
+    ```
+
+    {% endif %}
+
     This command:
     * Formats the device (erases all data).
     * Prepares it for use by the backup service.
-    * Sets it to mount automatically at `/data/backup` on boot.
+    * Sets it to mount automatically at `/data/backup` on boot.{% ifversion ghes > 3.19 %}
+    * If in a clustered environment, configures the node in `cluster.conf` with the `backup-server` role.{% endif %}
+  
+    {% ifversion ghes = 3.17 %}
+    From {% data variables.product.prodname_ghe_server %} 3.17.4 onward, the script is installed in PATH so you can run it directly using: `ghe-storage-init-backup /dev/YOUR_DEVICE_NAME`.
+    {% endif %}
 
 #### Reusing a previously initialized disk
 
@@ -94,9 +110,9 @@ If the device was already initialized using `ghe-storage-init-backup`, you can r
 
 ### Configuring backup settings
 
-After the backup target is mounted, the Backup Service page will become available in the {% data variables.enterprise.management_console %}. If you're using a block device, this requires completing the initialization or mount steps above.
+After the backup target is mounted, the Backup Service page will become available in the {% data variables.enterprise.management_console %}. {% ifversion ghes > 3.19 %} If your instance is part of a clustered environment, the system will automatically detect the node that was initialized with `ghe-storage-init-backup` and treat it as the backup server. {% endif %}
 
->[!NOTE] The settings page won’t appear until the backup storage is mounted at `/data/backup`.
+>[!NOTE] The settings page won’t appear until the backup storage is mounted at `/data/backup` by completing the initialization or mount steps above.
 
 If you're migrating from {% data variables.product.prodname_enterprise_backup_utilities %}, you can transfer your configuration in one of two ways:
 
@@ -109,12 +125,36 @@ If you're migrating from {% data variables.product.prodname_enterprise_backup_ut
 
    Use the `--dry-run` flag to preview changes without applying them.
 
-### Scheduling automated backups
+#### Scheduling automated backups
 
 Once the service is configured, you can define a backup schedule.
 
-1. In the {% data variables.enterprise.management_console %}, open the "Backup Service" page.
+1. In the {% data variables.enterprise.management_console %}, open the "Backups" tab from the top menu.
 1. In the "Backup Schedule" section, choose a predefined schedule (e.g., Daily) or enter a custom cron expression.
 1. Click **Save** to apply the changes.
 
 The first run will be a full backup. Future runs will be incremental. If a new backup attempt starts while a previous one is still running, it may be skipped or fail. In that case, adjust the schedule to avoid overlap.
+
+{% ifversion ghes > 3.19 %}
+
+### Configuring backups from a replica node
+
+For high availability, you can designate a replica node as your backup server. To minimize latency, {% data variables.product.github %} recommends picking a replica node in the same region or datacenter as your primary node.
+
+> [!IMPORTANT] 
+> Backups from cache replica nodes or active geo replica nodes are not supported.
+
+To configure your backup server, run the following commands, replacing `HOSTNAME` with the hostname of the node:
+
+```shell
+ghe-config cluster.HOSTNAME.backup-server true
+
+ghe-config-apply
+```
+
+You can now run `ghe-backup` directly on your replica node.
+
+> [!WARNING]
+> Due to the latency between primary and replica nodes, you may lose data when backing up from a replica node.
+
+{% endif %}

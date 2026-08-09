@@ -9,7 +9,7 @@ const pages: { [key: string]: string } = {
   homepage: '/',
   learningPath:
     '/code-security/getting-started/quickstart?learn=foo_bar&learnProduct=code-security',
-  mapAndTopic: '/actions/category/map-topic',
+  mapAndTopic: '/actions/category/subcategory',
   procedural: '/get-started/images/images-in-lists',
   productLanding: '/code-security',
   restCategory: '/rest/actions/artifacts',
@@ -23,7 +23,7 @@ const pages: { [key: string]: string } = {
 }
 
 // create a test for each page, will eventually be separated into finer grain tests
-Object.keys(pages).forEach((pageName) => {
+for (const pageName of Object.keys(pages)) {
   test.describe(`${pageName}`, () => {
     test('full page axe scan without experiments', async ({ page }) => {
       await page.goto(pages[pageName])
@@ -35,6 +35,7 @@ Object.keys(pages).forEach((pageName) => {
       expect(accessibilityScanResults.violations).toEqual([])
     })
   })
+
   test.describe(`${pageName} (with experiments)`, () => {
     test('full page axe scan with experiments', async ({ page }) => {
       await page.goto(pages[pageName])
@@ -46,4 +47,4 @@ Object.keys(pages).forEach((pageName) => {
       expect(accessibilityScanResults.violations).toEqual([])
     })
   })
-})
+}

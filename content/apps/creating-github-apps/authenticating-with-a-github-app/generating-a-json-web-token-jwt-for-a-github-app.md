@@ -121,6 +121,7 @@ payload = {
     'iss': client_id{% else %}
     # {% data variables.product.prodname_github_app %}'s app ID
     'iss': app_id{% endif %}
+
 }
 
 # Create JWT
@@ -139,7 +140,6 @@ This script will prompt you for the file path where your private key is stored a
 ```bash copy
 #!/usr/bin/env bash
 
-set -o pipefail
 {% ifversion client-id-for-app %}
 client_id=$1 # Client ID as first argument
 {% else %}
@@ -202,7 +202,7 @@ $header = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((Conve
 $payload = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json -InputObject @{
   iat = [System.DateTimeOffset]::UtcNow.AddSeconds(-10).ToUnixTimeSeconds()
   exp = [System.DateTimeOffset]::UtcNow.AddMinutes(10).ToUnixTimeSeconds()
-  {% ifversion client-id-for-app %} iss = $client_id {% else %} iss = $app_id {% endif %}
+  {% ifversion client-id-for-app %}iss = $client_id{% else %}iss = $app_id{% endif %}
 }))).TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
 $rsa = [System.Security.Cryptography.RSA]::Create()
