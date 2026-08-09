@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Personal to-do list — track tasks with due dates, priority, and category, stored privately in your browser.">
+<title>To-Do List</title>
+<style>
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
+
+  :root {
+    /* Apple-inspired system palette (matches /profile and /expenses) */
+    --white: #ffffff;
+    --grey: #f5f5f7;
+    --ink: #1d1d1f;
+    --sub: #86868b;
+    --divider: #d2d2d7;
+    --blue: #0066cc;
+    --cta: #0071e3;
+    --red: #d70015;
+    --green: #1a7f37;
+    --orange: #c2410c;
+
+    --bg: var(--white);
+    --bg-alt: var(--grey);
+    --fg: var(--ink);
+    --fg-muted: var(--sub);
+    --accent: var(--blue);
+    --btn: var(--cta);
+    --btn-fg: #ffffff;
+    --rule: var(--divider);
+    --card: #ffffff;
+    --card-border: rgba(0, 0, 0, 0.08);
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    --danger: var(--red);
+    --positive: var(--green);
+    --warn: var(--orange);
+    --input-bg: #ffffff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #000000;
+      --bg-alt: #1d1d1f;
+      --fg: #f5f5f7;
+      --fg-muted: #86868b;
+      --divider: #424245;
+      --accent: #2997ff;
+      --btn: #0071e3;
+      --btn-fg: #ffffff;
+      --rule: #424245;
+      --card: #2a2a2c;
+      --card-border: rgba(255, 255, 255, 0.10);
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      --danger: #ff453a;
+      --positive: #32d74b;
+      --warn: #ff9f0a;
+      --input-bg: #1d1d1f;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #000000;
+    --bg-alt: #1d1d1f;
+    --fg: #f5f5f7;
+    --fg-muted: #86868b;
+    --divider: #424245;
+    --accent: #2997ff;
+    --btn: #0071e3;
+    --btn-fg: #ffffff;
+    --rule: #424245;
+    --card: #2a2a2c;
+    --card-border: rgba(255, 255, 255, 0.10);
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    --danger: #ff453a;
+    --positive: #32d74b;
+    --warn: #ff9f0a;
+    --input-bg: #1d1d1f;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 22px;
+  }
+
+  /* ---------- Header ---------- */
+
+  header.page-head {
+    padding: 56px 0 36px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 0 0 8px;
+    letter-spacing: 0.02em;
+  }
+
+  h1 {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    font-size: clamp(30px, 5vw, 44px);
+    margin: 0 0 10px;
+  }
+
+  .page-sub {
+    color: var(--fg-muted);
+    font-size: 17px;
+    max-width: 46ch;
+    margin: 0 auto;
+  }
+
+  main { padding-bottom: 90px; }
+
+  section { margin-top: 44px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+
+  h2.section-title {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 20px;
+  }
+
+  /* ---------- Summary stats ---------- */
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .stat-card {
+    background: var(--bg-alt);
+    border-radius: 16px;
+    padding: 20px 20px;
+    text-align: left;
+  }
+
+  .stat-card .label {
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin-bottom: 8px;
+  }
+
+  .stat-card .value {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-card .value.danger { color: var(--danger); }
+  .stat-card .value.positive { color: var(--positive); }
+
+  .progress-track {
+    margin-top: 20px;
+    background: var(--bg-alt);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    background: var(--positive);
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-label {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--fg-muted);
+  }
+
+  /* ---------- Form ---------- */
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.span-2 { grid-column: span 2; }
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg-muted);
+  }
+
+  input, select, textarea {
+    font: inherit;
+    font-size: 15px;
+    color: var(--fg);
+    background: var(--input-bg);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 10px 12px;
+    width: 100%;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+
+  textarea { resize: vertical; min-height: 40px; }
+
+  .form-actions {
+    margin-top: 22px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    background: var(--btn);
+    color: var(--btn-fg);
+    border: none;
+    text-decoration: none;
+    border-radius: 980px;
+    padding: 11px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    font-family: inherit;
+  }
+
+  .btn:hover { background: #0077ed; }
+  .btn.secondary {
+    background: var(--bg-alt);
+    color: var(--fg);
+  }
+  .btn.secondary:hover { background: var(--rule); }
+  .btn.danger { background: var(--danger); }
+  .btn.danger:hover { filter: brightness(1.08); }
+  .btn.small { padding: 7px 16px; font-size: 13px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .hint { font-size: 12px; color: var(--fg-muted); margin-top: 2px; }
+
+  /* ---------- Filters ---------- */
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+  }
+
+  .filter-row .field { flex: 1; min-width: 140px; }
+
+  .view-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--bg-alt);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  .view-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--fg-muted);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .view-tab.active {
+    background: var(--card);
+    color: var(--fg);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  /* ---------- Task list ---------- */
+
+  .task-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .task-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--bg-alt);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .task-row.done { opacity: 0.6; }
+
+  .task-check {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    margin-top: 1px;
+    border-radius: 999px;
+    border: 2px solid var(--rule);
+    background: var(--card);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: var(--btn-fg);
+  }
+
+  .task-check.checked {
+    background: var(--positive);
+    border-color: var(--positive);
+  }
+
+  .task-check svg { width: 13px; height: 13px; display: none; }
+  .task-check.checked svg { display: block; }
+
+  .task-main { flex: 1; min-width: 0; }
+
+  .task-title {
+    font-size: 15.5px;
+    font-weight: 600;
+    word-break: break-word;
+  }
+
+  .task-row.done .task-title { text-decoration: line-through; color: var(--fg-muted); }
+
+  .task-notes {
+    margin-top: 3px;
+    font-size: 13.5px;
+    color: var(--fg-muted);
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+
+  .task-meta {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--card);
+    border-radius: 980px;
+    padding: 3px 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .chip.priority-high { color: var(--danger); }
+  .chip.priority-medium { color: var(--warn); }
+  .chip.priority-low { color: var(--fg-muted); }
+  .chip.due-overdue { color: var(--danger); font-weight: 600; }
+  .chip.due-today { color: var(--warn); font-weight: 600; }
+
+  .task-actions {
+    flex: 0 0 auto;
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .icon-btn {
+    background: none; border: none; cursor: pointer; color: var(--fg-muted);
+    font-size: 13px; padding: 5px 9px; border-radius: 6px; font-family: inherit;
+  }
+  .icon-btn:hover { background: var(--card); color: var(--fg); }
+  .icon-btn.danger:hover { color: var(--danger); }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--fg-muted);
+  }
+
+  .empty-state .big { font-size: 32px; margin-bottom: 10px; }
+
+  /* ---------- Footer / data tools ---------- */
+
+  .data-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .data-tools .left { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .privacy-note {
+    font-size: 13px;
+    color: var(--fg-muted);
+    max-width: 60ch;
+  }
+
+  footer.footer-bar {
+    background: var(--bg-alt);
+    border-top: 1px solid var(--rule);
+    padding: 28px 0;
+    margin-top: 60px;
+  }
+
+  footer.footer-bar p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--fg-muted);
+    text-align: center;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--fg);
+    color: var(--bg);
+    padding: 10px 20px;
+    border-radius: 980px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 100;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .field.span-2 { grid-column: span 1; }
+    .data-tools { flex-direction: column; align-items: stretch; }
+    .task-row { flex-wrap: wrap; }
+    .task-actions { margin-left: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Personal Productivity</p>
+    <h1>To-Do List</h1>
+    <p class="page-sub">Track tasks with due dates, priority, and category. Everything stays in this browser — nothing is uploaded anywhere.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section id="summary" class="card">
+      <h2 class="section-title">Summary</h2>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <p class="progress-label" id="progressLabel">0% complete</p>
+    </section>
+
+    <section id="add-task" class="card">
+      <h2 class="section-title">Add task</h2>
+      <form id="taskForm">
+        <div class="form-grid">
+          <div class="field span-2">
+            <label for="f-title">Task</label>
+            <input type="text" id="f-title" placeholder="What needs doing?" maxlength="200" required>
+          </div>
+          <div class="field">
+            <label for="f-due">Due date</label>
+            <input type="date" id="f-due">
+          </div>
+          <div class="field">
+            <label for="f-priority">Priority</label>
+            <select id="f-priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-category">Category</label>
+            <input type="text" id="f-category" placeholder="e.g. Work, Personal" list="categoryList" maxlength="60">
+            <datalist id="categoryList"></datalist>
+          </div>
+          <div class="field span-2">
+            <label for="f-notes">Notes (optional)</label>
+            <textarea id="f-notes" placeholder="Any extra detail…" maxlength="1000"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn" id="submitBtn">Add task</button>
+          <button type="button" class="btn secondary" id="cancelEditBtn" hidden>Cancel edit</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="task-list-section" class="card">
+      <h2 class="section-title">Tasks</h2>
+
+      <div class="view-tabs" id="viewTabs">
+        <button type="button" class="view-tab active" data-view="active">Active</button>
+        <button type="button" class="view-tab" data-view="completed">Completed</button>
+        <button type="button" class="view-tab" data-view="all">All</button>
+      </div>
+
+      <div class="filter-row" style="margin-top:16px;">
+        <div class="field">
+          <label for="filter-category">Category</label>
+          <select id="filter-category"><option value="">All categories</option></select>
+        </div>
+        <div class="field">
+          <label for="filter-priority">Priority</label>
+          <select id="filter-priority">
+            <option value="">All priorities</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filter-sort">Sort by</label>
+          <select id="filter-sort">
+            <option value="due">Due date</option>
+            <option value="priority">Priority</option>
+            <option value="created">Date added</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="filter-search">Search</label>
+          <input type="text" id="filter-search" placeholder="Task or notes…">
+        </div>
+        <button type="button" class="btn secondary small" id="clearFiltersBtn">Clear filters</button>
+      </div>
+
+      <div class="task-list" id="taskList"></div>
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="big">✅</div>
+        <p id="emptyStateText">No tasks match your filters yet.</p>
+      </div>
+    </section>
+
+    <section id="data-tools" class="card">
+      <h2 class="section-title">Your data</h2>
+      <div class="data-tools">
+        <div class="left">
+          <button type="button" class="btn secondary" id="clearCompletedBtn">Clear completed</button>
+          <button type="button" class="btn secondary" id="exportJsonBtn">Export JSON</button>
+          <label class="btn secondary" for="importFile" style="cursor:pointer;">Import JSON
+            <input type="file" id="importFile" accept="application/json" hidden>
+          </label>
+          <button type="button" class="btn danger" id="clearAllBtn">Delete all data</button>
+        </div>
+        <p class="privacy-note">Stored only in this browser's local storage (per device/browser). Export regularly if you want a backup or want to move it elsewhere.</p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="footer-bar">
+  <div class="wrap">
+    <p>To-Do List — a private, local-only tool. No data leaves your browser.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "todoList:v1";
+  var editingId = null;
+  var currentView = "active";
+
+  var PRIORITY_RANK = { high: 0, medium: 1, low: 2 };
+
+  /** @returns {Array<Object>} */
+  function loadTasks() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      console.error("Failed to read task data", e);
+      return [];
+    }
+  }
+
+  function saveTasks(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  function todayISO() {
+    var d = new Date();
+    var tz = d.getTimezoneOffset() * 60000;
+    return new Date(d - tz).toISOString().slice(0, 10);
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function formatDueDate(iso) {
+    if (!iso) return "";
+    try {
+      var d = new Date(iso + "T00:00:00");
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(function () { t.classList.remove("show"); }, 2200);
+  }
+
+  var tasks = loadTasks();
+
+  // ---------- Elements ----------
+  var form = document.getElementById("taskForm");
+  var fTitle = document.getElementById("f-title");
+  var fDue = document.getElementById("f-due");
+  var fPriority = document.getElementById("f-priority");
+  var fCategory = document.getElementById("f-category");
+  var fNotes = document.getElementById("f-notes");
+  var categoryList = document.getElementById("categoryList");
+  var submitBtn = document.getElementById("submitBtn");
+  var cancelEditBtn = document.getElementById("cancelEditBtn");
+
+  var viewTabs = document.getElementById("viewTabs");
+  var filterCategory = document.getElementById("filter-category");
+  var filterPriority = document.getElementById("filter-priority");
+  var filterSort = document.getElementById("filter-sort");
+  var filterSearch = document.getElementById("filter-search");
+  var clearFiltersBtn = document.getElementById("clearFiltersBtn");
+
+  var taskListEl = document.getElementById("taskList");
+  var emptyState = document.getElementById("emptyState");
+  var emptyStateText = document.getElementById("emptyStateText");
+  var statsGrid = document.getElementById("statsGrid");
+  var progressFill = document.getElementById("progressFill");
+  var progressLabel = document.getElementById("progressLabel");
+
+  // ---------- Form submit (add / edit) ----------
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var title = fTitle.value.trim();
+    if (!title) {
+      showToast("Please enter a task title");
+      return;
+    }
+
+    var entry = {
+      id: editingId || uid(),
+      title: title,
+      due: fDue.value || null,
+      priority: fPriority.value,
+      category: fCategory.value.trim() || "General",
+      notes: fNotes.value.trim(),
+      done: false,
+      createdAt: editingId ? undefined : new Date().toISOString()
+    };
+
+    if (editingId) {
+      var idx = tasks.findIndex(function (x) { return x.id === editingId; });
+      if (idx > -1) {
+        entry.createdAt = tasks[idx].createdAt;
+        entry.done = tasks[idx].done;
+        tasks[idx] = entry;
+      }
+      showToast("Task updated");
+    } else {
+      tasks.unshift(entry);
+      showToast("Task added");
+    }
+
+    saveTasks(tasks);
+    resetForm();
+    renderAll();
+  });
+
+  function resetForm() {
+    form.reset();
+    fPriority.value = "medium";
+    editingId = null;
+    submitBtn.textContent = "Add task";
+    cancelEditBtn.hidden = true;
+  }
+
+  cancelEditBtn.addEventListener("click", resetForm);
+
+  function startEdit(id) {
+    var entry = tasks.find(function (x) { return x.id === id; });
+    if (!entry) return;
+    editingId = id;
+    fTitle.value = entry.title;
+    fDue.value = entry.due || "";
+    fPriority.value = entry.priority || "medium";
+    fCategory.value = entry.category || "";
+    fNotes.value = entry.notes || "";
+    submitBtn.textContent = "Save changes";
+    cancelEditBtn.hidden = false;
+    document.getElementById("add-task").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function deleteTask(id) {
+    if (!confirm("Delete this task? This cannot be undone.")) return;
+    tasks = tasks.filter(function (x) { return x.id !== id; });
+    saveTasks(tasks);
+    if (editingId === id) resetForm();
+    renderAll();
+    showToast("Task deleted");
+  }
+
+  function toggleDone(id) {
+    var entry = tasks.find(function (x) { return x.id === id; });
+    if (!entry) return;
+    entry.done = !entry.done;
+    saveTasks(tasks);
+    renderAll();
+  }
+
+  // ---------- View tabs ----------
+  viewTabs.addEventListener("click", function (e) {
+    var btn = e.target.closest(".view-tab");
+    if (!btn) return;
+    currentView = btn.getAttribute("data-view");
+    Array.prototype.forEach.call(viewTabs.querySelectorAll(".view-tab"), function (t) {
+      t.classList.toggle("active", t === btn);
+    });
+    renderTaskList();
+  });
+
+  // ---------- Filters ----------
+  function populateFilterOptions() {
+    var cats = Array.from(new Set(tasks.map(function (x) { return x.category; }))).sort();
+    var curCat = filterCategory.value;
+    filterCategory.innerHTML = '<option value="">All categories</option>' +
+      cats.map(function (c) { return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>'; }).join("");
+    filterCategory.value = cats.indexOf(curCat) > -1 ? curCat : "";
+    categoryList.innerHTML = cats.map(function (c) { return '<option value="' + escapeHtml(c) + '">'; }).join("");
+  }
+
+  function getFiltered() {
+    var cat = filterCategory.value;
+    var pri = filterPriority.value;
+    var q = filterSearch.value.trim().toLowerCase();
+    var sort = filterSort.value;
+
+    var list = tasks.filter(function (x) {
+      if (currentView === "active" && x.done) return false;
+      if (currentView === "completed" && !x.done) return false;
+      if (cat && x.category !== cat) return false;
+      if (pri && x.priority !== pri) return false;
+      if (q && (x.title.toLowerCase().indexOf(q) === -1) && ((x.notes || "").toLowerCase().indexOf(q) === -1)) return false;
+      return true;
+    });
+
+    list.sort(function (a, b) {
+      if (sort === "priority") {
+        return PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority] || (b.createdAt || "").localeCompare(a.createdAt || "");
+      }
+      if (sort === "created") {
+        return (b.createdAt || "").localeCompare(a.createdAt || "");
+      }
+      // due date: tasks without a due date sort last
+      if (!a.due && !b.due) return (b.createdAt || "").localeCompare(a.createdAt || "");
+      if (!a.due) return 1;
+      if (!b.due) return -1;
+      return a.due.localeCompare(b.due);
+    });
+
+    return list;
+  }
+
+  [filterCategory, filterPriority, filterSort].forEach(function (el) {
+    el.addEventListener("change", renderTaskList);
+  });
+  filterSearch.addEventListener("input", renderTaskList);
+  clearFiltersBtn.addEventListener("click", function () {
+    filterCategory.value = "";
+    filterPriority.value = "";
+    filterSort.value = "due";
+    filterSearch.value = "";
+    renderTaskList();
+  });
+
+  // ---------- Rendering ----------
+  var checkIcon = '<svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.2 11.5L13 4.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function dueChip(task) {
+    if (!task.due) return "";
+    var today = todayISO();
+    var cls = "chip";
+    var label = formatDueDate(task.due);
+    if (!task.done && task.due < today) { cls += " due-overdue"; label = "Overdue · " + label; }
+    else if (task.due === today) { cls += " due-today"; label = "Due today"; }
+    return '<span class="' + cls + '">' + escapeHtml(label) + '</span>';
+  }
+
+  function renderTaskList() {
+    var filtered = getFiltered();
+    if (filtered.length === 0) {
+      taskListEl.innerHTML = "";
+      emptyState.hidden = false;
+      emptyStateText.textContent = currentView === "completed"
+        ? "No completed tasks yet."
+        : currentView === "active"
+          ? "No active tasks — you're all caught up."
+          : "No tasks match your filters yet.";
+      return;
+    }
+    emptyState.hidden = true;
+    taskListEl.innerHTML = filtered.map(function (x) {
+      return (
+        '<div class="task-row' + (x.done ? " done" : "") + '" data-id="' + x.id + '">' +
+        '<button type="button" class="task-check' + (x.done ? " checked" : "") + '" title="' + (x.done ? "Mark as active" : "Mark as done") + '" aria-label="Toggle complete">' + checkIcon + '</button>' +
+        '<div class="task-main">' +
+          '<div class="task-title">' + escapeHtml(x.title) + '</div>' +
+          (x.notes ? '<div class="task-notes">' + escapeHtml(x.notes) + '</div>' : "") +
+          '<div class="task-meta">' +
+            '<span class="chip priority-' + x.priority + '">' + x.priority.charAt(0).toUpperCase() + x.priority.slice(1) + '</span>' +
+            '<span class="chip">' + escapeHtml(x.category) + '</span>' +
+            dueChip(x) +
+          '</div>' +
+        '</div>' +
+        '<div class="task-actions">' +
+          '<button type="button" class="icon-btn edit-btn" title="Edit">Edit</button>' +
+          '<button type="button" class="icon-btn danger delete-btn" title="Delete">Delete</button>' +
+        '</div>' +
+        '</div>'
+      );
+    }).join("");
+  }
+
+  taskListEl.addEventListener("click", function (e) {
+    var row = e.target.closest(".task-row[data-id]");
+    if (!row) return;
+    var id = row.getAttribute("data-id");
+    if (e.target.closest(".task-check")) toggleDone(id);
+    else if (e.target.classList.contains("edit-btn")) startEdit(id);
+    else if (e.target.classList.contains("delete-btn")) deleteTask(id);
+  });
+
+  function renderSummary() {
+    var total = tasks.length;
+    var completed = tasks.filter(function (x) { return x.done; }).length;
+    var active = total - completed;
+    var today = todayISO();
+    var overdue = tasks.filter(function (x) { return !x.done && x.due && x.due < today; }).length;
+
+    statsGrid.innerHTML =
+      '<div class="stat-card"><div class="label">Active</div><div class="value">' + active + '</div></div>' +
+      '<div class="stat-card"><div class="label">Completed</div><div class="value positive">' + completed + '</div></div>' +
+      '<div class="stat-card"><div class="label">Overdue</div><div class="value' + (overdue > 0 ? " danger" : "") + '">' + overdue + '</div></div>' +
+      '<div class="stat-card"><div class="label">Total</div><div class="value">' + total + '</div></div>';
+
+    var pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+    progressFill.style.width = pct + "%";
+    progressLabel.textContent = pct + "% complete (" + completed + " of " + total + ")";
+  }
+
+  function renderAll() {
+    populateFilterOptions();
+    renderTaskList();
+    renderSummary();
+  }
+
+  // ---------- Export / Import / Clear ----------
+  function download(filename, content, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.getElementById("exportJsonBtn").addEventListener("click", function () {
+    download("todos.json", JSON.stringify(tasks, null, 2), "application/json");
+  });
+
+  document.getElementById("importFile").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var imported = JSON.parse(reader.result);
+        if (!Array.isArray(imported)) throw new Error("Not a list");
+        var validated = imported.filter(function (x) {
+          return x && typeof x.title === "string";
+        }).map(function (x) {
+          return {
+            id: x.id || uid(),
+            title: x.title,
+            due: x.due || null,
+            priority: PRIORITY_RANK.hasOwnProperty(x.priority) ? x.priority : "medium",
+            category: x.category || "General",
+            notes: x.notes || "",
+            done: !!x.done,
+            createdAt: x.createdAt || new Date().toISOString()
+          };
+        });
+        var existingIds = new Set(tasks.map(function (x) { return x.id; }));
+        var added = 0;
+        validated.forEach(function (x) {
+          if (!existingIds.has(x.id)) { tasks.push(x); added++; }
+        });
+        saveTasks(tasks);
+        renderAll();
+        showToast("Imported " + added + " task(s)");
+      } catch (err) {
+        showToast("Import failed: invalid JSON file");
+      }
+      e.target.value = "";
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById("clearCompletedBtn").addEventListener("click", function () {
+    var completedCount = tasks.filter(function (x) { return x.done; }).length;
+    if (completedCount === 0) { showToast("No completed tasks to clear"); return; }
+    if (!confirm("Delete all " + completedCount + " completed task(s)? This cannot be undone.")) return;
+    tasks = tasks.filter(function (x) { return !x.done; });
+    saveTasks(tasks);
+    renderAll();
+    showToast("Completed tasks cleared");
+  });
+
+  document.getElementById("clearAllBtn").addEventListener("click", function () {
+    if (!confirm("Delete ALL task data from this browser? This cannot be undone.")) return;
+    tasks = [];
+    saveTasks(tasks);
+    resetForm();
+    renderAll();
+    showToast("All task data deleted");
+  });
+
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
