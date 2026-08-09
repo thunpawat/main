@@ -3,9 +3,15 @@
 `index.html` is a standalone, self-contained Marketing & Brand portfolio page for
 Thunpawat Techasoontornsakun (Maggi) — Marketing Manager (brand, event,
 e-commerce, PR, and AI marketing). It has no build dependency on the rest of this
-repository (which is a fork of [github/docs](https://github.com/github/docs));
-open the file directly in a browser, or serve `profile/` as a static site (e.g.
-via GitHub Pages) to publish it.
+repository (which is a fork of [github/docs](https://github.com/github/docs)).
+
+This `docs/` folder is the GitHub Pages source: in **Settings → Pages**, set
+**Deploy from a branch → Branch: `main`, Folder: `/docs`**. GitHub Pages then
+serves this folder as the site root (so `index.html` here is the home page, and
+`portrait.jpg` loads from the same folder). `.nojekyll` disables Jekyll so the
+files publish as-is. Using `/docs` rather than the repo root keeps the published
+site tiny instead of publishing the entire docs fork. You can also just open
+`index.html` directly in a browser.
 
 Content is sourced from the supplied CV, certifications (PMP, Program Management
 Fundamentals, Project Management Essentials, Google Partner, Google AI
