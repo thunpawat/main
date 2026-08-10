@@ -476,6 +476,72 @@
     font-size: 14px;
   }
 
+  /* ---------- Projects ---------- */
+
+  .project-card {
+    max-width: 720px;
+    margin: 44px auto 0;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 34px 32px;
+    text-align: left;
+  }
+
+  .project-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .project-name {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .project-badge {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--card-border);
+    border-radius: 980px;
+    padding: 4px 12px;
+  }
+
+  .project-tagline {
+    margin: 8px 0 16px;
+    color: var(--fg);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .project-desc {
+    margin: 0 0 22px;
+    color: var(--fg-muted);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 26px;
+  }
+
+  .project-links {
+    display: flex;
+    align-items: center;
+    gap: 14px 24px;
+    flex-wrap: wrap;
+  }
+
   /* ---------- Certifications ---------- */
 
   .seal-grid {
@@ -1118,7 +1184,42 @@
     </div>
   </section>
 
-  <section class="section" id="contact">
+  <section class="section" id="projects">
+    <div class="wrap wrap--narrow center section-head">
+      <p class="eyebrow">Projects</p>
+      <h2 class="section-title">Things I've built.</h2>
+      <p class="section-intro">Beyond campaigns — hands-on products that put AI to work for people.</p>
+    </div>
+    <div class="wrap">
+      <div class="project-card">
+        <div class="project-head">
+          <h3 class="project-name">Accessly</h3>
+          <span class="project-badge">Build for Good</span>
+        </div>
+        <p class="project-tagline">AI Accessibility Marketing Assistant</p>
+        <p class="project-desc">
+          An AI-powered tool that helps small businesses, schools, nonprofits, and community
+          organizations make digital communication clearer and more inclusive. Paste or upload
+          content to get an accessibility score and prioritized issues, then generate alt text,
+          an easy-to-read version, or a complete accessible rewrite — so people with visual
+          impairments, reading difficulties, and other underserved groups aren't excluded from
+          essential information.
+        </p>
+        <div class="project-tags">
+          <span class="chip">Next.js</span>
+          <span class="chip">TypeScript</span>
+          <span class="chip">OpenAI API</span>
+          <span class="chip">Codex</span>
+        </div>
+        <div class="project-links">
+          <a class="btn" href="https://accessly-ai-accessibility.vercel.app" target="_blank" rel="noopener noreferrer">Live demo</a>
+          <a class="link" href="https://github.com/thunpawat/accessly-ai-accessibility" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--grey" id="contact">
     <div class="wrap wrap--narrow center">
       <h2 class="section-title">Let's talk growth.</h2>
       <div class="contact-list">

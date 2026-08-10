@@ -20,8 +20,9 @@ Media Marketing, Certified Scrum Master, Claude 101, Canva Essentials), and a
 detailed marketing portfolio: a seven-category Selected Work
 section (event, CSR, digital, e-commerce, PR/compliance, creative, AI), career
 highlights (incl. U-POWER 2025 national 1st runner-up), the INNOFRESH brands
-(Say Ohh!, Zecret Spoon, Pai Linn, Fresh O', Fresh O' Gold), and events
-(THAIFEX–Anuga Asia, IMPACT).
+(Say Ohh!, Zecret Spoon, Pai Linn, Fresh O', Fresh O' Gold), events
+(THAIFEX–Anuga Asia, IMPACT), and a featured build project (Accessly — an AI
+accessibility marketing assistant, Next.js/TypeScript/OpenAI).
 
 Legal name spelling was confirmed against a government ID; no ID number, date
 of birth, home address, or photo from that document is included anywhere in
