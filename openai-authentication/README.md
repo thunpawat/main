@@ -2,7 +2,7 @@
 
 `index.html` is a standalone, dependency-free presentation of the supplied
 OpenAI authentication documentation. It follows the same isolated-page pattern
-as `profile/`, `expenses/`, and `todo/`, so it does not change or depend on the
+as `docs/`, `expenses/`, and `todo/`, so it does not change or depend on the
 GitHub Docs application in this repository.
 
 ## Preview locally
