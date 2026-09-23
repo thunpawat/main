@@ -2,6 +2,20 @@
 
 Welcome to GitHub Docs! GitHub’s documentation is open source, meaning anyone from inside or outside the company can contribute. For full contributing guidelines, visit our [contributing guide](https://docs.github.com/en/contributing).
 
+## Personal projects in this fork
+
+This fork also contains independent personal work. Start here to find each project without changing its existing URL or build path:
+
+| Folder | Contents |
+| --- | --- |
+| [`docs/`](docs/README.md) | Portfolio website and GitHub Pages source (`/docs`) |
+| [`expenses/`](expenses/README.md) | Browser-based expense tracker |
+| [`todo/`](todo/README.md) | Browser-based task list |
+| [`canvas/`](canvas/README.md) | Quiet Taxonomy artwork and design notes |
+| [`openai-authentication/`](openai-authentication/README.md) | Standalone authentication guide |
+
+The GitHub Docs application uses `src/`, `content/`, `data/`, `config/`, and related build files. Keep its paths intact when updating this fork.
+
 
 ## Quick links by contributor type
 
