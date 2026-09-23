@@ -24,6 +24,7 @@ import { generateAISearchLinksJson } from '../helpers/ai-search-links-json'
 import { ASK_AI_EVENT_GROUP } from '@/events/components/event-groups'
 
 import type { AIReference } from '../types'
+import { RenderedHTML } from '@/frame/components/ui/RenderedHTML/RenderedHTML'
 
 type AIQueryResultsProps = {
   query: string
@@ -85,7 +86,6 @@ export function AskAIResults({
 
   let copyUrl = ``
   if (window?.location?.href) {
-    // Get base path from current URL
     const url = new URL(window.location.href)
     copyUrl = `${url.origin}/?search-overlay-open=true&search-overlay-ask-ai=true&search-overlay-input=${encodeURIComponent(query)}`
   }
@@ -232,15 +232,23 @@ export function AskAIResults({
         const decoder = new TextDecoder('utf-8')
         const reader = response.body.getReader()
         let done = false
-        let leftover = '' // <= carry‑over buffer
+        let leftover = ''
         setInitialLoading(false)
 
-        const processLine = (parsedLine: any) => {
+        type ParsedLine = {
+          chunkType?: string
+          conversation_id?: string
+          sources?: AIReference[]
+          text?: string
+          errors?: unknown
+        }
+
+        const processLine = (parsedLine: ParsedLine) => {
           switch (parsedLine.chunkType) {
             // A conversation ID will still be sent when a question cannot be answered
             case 'CONVERSATION_ID':
-              conversationIdBuffer = parsedLine.conversation_id
-              setConversationId(parsedLine.conversation_id)
+              conversationIdBuffer = parsedLine.conversation_id ?? ''
+              setConversationId(parsedLine.conversation_id ?? '')
               break
 
             case 'NO_CONTENT_SIGNAL':
@@ -251,7 +259,7 @@ export function AskAIResults({
             case 'SOURCES':
               if (!isCancelled) {
                 sourcesBuffer = uniqBy(
-                  sourcesBuffer.concat(parsedLine.sources as AIReference[]),
+                  sourcesBuffer.concat((parsedLine.sources ?? []) as AIReference[]),
                   'url',
                 )
                 setReferences(sourcesBuffer)
@@ -260,7 +268,7 @@ export function AskAIResults({
 
             case 'MESSAGE_CHUNK':
               if (!isCancelled) {
-                messageBuffer += parsedLine.text
+                messageBuffer += parsedLine.text ?? ''
                 setMessage(messageBuffer)
               }
               break
@@ -282,23 +290,22 @@ export function AskAIResults({
           const { value, done: readerDone } = await reader.read()
           done = readerDone
 
-          // The sources JSON chunk may be sent in multiple parts, so we need to decode it with a leftover buffer so that it can be parsed all at once
-          // So when we say "incomplete" or "leftover" we mean that the JSON is not complete yet, not that the message is incomplete
+          // A newline-delimited JSON record can span stream chunks, so decoded
+          // text goes into a leftover buffer and is parsed once a whole line
+          // arrives. "Incomplete" and "leftover" refer to the JSON, not to the
+          // message.
           if (value) {
-            // 1 append this chunk's text to whatever was left over
             leftover += decoder.decode(value, { stream: true })
 
-            // 2 split on newline
             const lines = leftover.split('\n')
 
-            // 3 keep the *last* item (maybe incomplete) for next round
+            // Keep the last item, which may be incomplete, for the next round.
             leftover = lines.pop() ?? ''
 
-            // 4 parse all complete lines
             for (const raw of lines) {
               if (!raw.trim()) continue
 
-              let parsedLine: any
+              let parsedLine: ParsedLine
               try {
                 parsedLine = JSON.parse(raw)
                 if (parsedLine?.errors) {
@@ -322,7 +329,7 @@ export function AskAIResults({
           }
         }
 
-        // 5 flush whatever remains after the stream ends
+        // Flush whatever remains after the stream ends.
         if (!isCancelled && leftover.trim()) {
           try {
             const tail = JSON.parse(leftover)
@@ -331,7 +338,7 @@ export function AskAIResults({
             console.warn('Failed to parse tail JSON:', leftover, err)
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (!isCancelled) {
           console.error('Failed to fetch search results:', error)
           setAISearchError()
@@ -390,7 +397,7 @@ export function AskAIResults({
         <article aria-busy={responseLoading} aria-live="assertive">
           {!aiCouldNotAnswer && message !== '' ? (
             <span ref={disclaimerRef} className={styles.disclaimerText}>
-              <span dangerouslySetInnerHTML={{ __html: t('search.ai.disclaimer') }} />
+              <RenderedHTML as="span" html={t('search.ai.disclaimer')} />
             </span>
           ) : null}
           <UnrenderedMarkdownContent

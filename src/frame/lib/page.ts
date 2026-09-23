@@ -20,6 +20,8 @@ import { deprecated, supported } from '@/versions/lib/enterprise-server-releases
 import { allPlatforms } from '@/tools/lib/all-platforms'
 import type { Context, FrontmatterVersions, FeaturedLinksExpanded } from '@/types'
 import type { Product } from '@/products/lib/all-products'
+import { createLogger } from '@/observability/logger'
+const logger = createLogger(import.meta.url)
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -119,7 +121,6 @@ class Page {
   public allToolsParsed: typeof allTools = allTools
   public introPlainText?: string
 
-  // Bound method
   public render: (context: Context) => Promise<string>
 
   static async init(opts: PageInitOptions): Promise<Page | undefined> {
@@ -192,24 +193,24 @@ class Page {
       } as PageReadResult
     } catch (err) {
       if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') return false
-      console.error(err)
+      logger.error('Failed to read page file', { error: err, fullPath })
       return false
     }
   }
 
   constructor(opts: PageReadResult) {
     if (opts.frontmatterErrors && opts.frontmatterErrors.length) {
-      console.error(
-        `${opts.frontmatterErrors.length} frontmatter errors trying to load ${opts.fullPath}:`,
-      )
-      console.error(opts.frontmatterErrors)
+      logger.error('Frontmatter errors loading page', {
+        errorCount: opts.frontmatterErrors.length,
+        fullPath: opts.fullPath,
+        frontmatterErrors: opts.frontmatterErrors,
+      })
       throw new FrontmatterErrorsError(
         `${opts.frontmatterErrors.length} frontmatter errors in ${opts.fullPath}`,
         opts.frontmatterErrors,
       )
     }
 
-    // Remove frontmatter errors before assignment
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { frontmatterErrors: _, ...cleanOpts } = opts
     Object.assign(this, cleanOpts)
@@ -226,7 +227,6 @@ class Page {
     // Is this the Homepage or a Product, Category, Topic, or Article?
     this.documentType = getDocumentType(this.relativePath)
 
-    // Get array of versions that the page is available in for fast lookup
     this.applicableVersions = getApplicableVersions(this.versions, this.fullPath)
 
     // Only check the parent product ID for English because if a top-level
@@ -248,7 +248,6 @@ class Page {
       }
     }
 
-    // derive array of Permalink objects
     this.permalinks = Permalink.derive(
       this.languageCode,
       this.relativePath,
@@ -265,7 +264,6 @@ class Page {
       }
     }
 
-    // if this is an article and it doesn't have showMiniToc = false, set mini TOC to true
     if (!this.relativePath.endsWith('index.md')) {
       this.showMiniToc = this.showMiniToc === false ? this.showMiniToc : true
     }
@@ -282,7 +280,6 @@ class Page {
     >
   }
 
-  // Infer the parent product ID from the page's relative file path
   get parentProductId(): string | null {
     // Each page's top-level content directory matches its product ID
     const id = this.relativePath.split('/')[0]
@@ -290,7 +287,6 @@ class Page {
     // ignore top-level content/index.md
     if (id === 'index.md') return null
 
-    // make sure the ID is valid
     if (process.env.NODE_ENV !== 'test') {
       assert(productMapKeysAsSet.has(id), `page ${this.fullPath} has an invalid product ID: ${id}`)
     }
@@ -319,7 +315,6 @@ class Page {
       context.englishHeadings = englishHeadings
     }
 
-    // pull translations for alerts
     context.alertTitles = await getAlertTitles(this)
 
     this.intro = await renderContentWithFallback(this, 'rawIntro', context)
@@ -417,7 +412,6 @@ class Page {
 
     if (!opts.unwrap) return html
 
-    // The unwrap option removes surrounding tags from a string, preserving any inner HTML
     return stripOuterTag(html)
   }
 

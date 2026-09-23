@@ -10,7 +10,7 @@
 # ---------------------------------------------------------------
 # To update the sha:
 # https://github.com/github/gh-base-image/pkgs/container/gh-base-image%2Fgh-base-noble
-FROM ghcr.io/github/gh-base-image/gh-base-noble:20260505-222701-gb8f4d82d0@sha256:e5ee5190511450a452713144fb1dcd957535ec7c68705efa48b3d2cbb9871b0d AS base
+FROM ghcr.io/github/gh-base-image/gh-base-noble:20260914-014148-gb620b63bf@sha256:fe199dcd96e01f53c42d077dee87f428e8341379aab0987721e16b32462feb05 AS base
 
 # Install curl for Node install and determining the early access branch
 # Install git for cloning docs-early-access & translations repos
@@ -18,7 +18,14 @@ FROM ghcr.io/github/gh-base-image/gh-base-noble:20260505-222701-gb8f4d82d0@sha25
 # https://github.com/nodejs/release#release-schedule
 # Ubuntu's apt-get install nodejs is _very_ outdated
 # Must run as root
-RUN apt-get -qq update && apt-get -qq install --no-install-recommends curl git \
+
+# From https://thehub.github.com/epd/engineering/devops/ci/actions/setting-up-new-github-action/
+# We passed pkg-mirror-host as a secret to the build but it is not sensitive data.
+RUN --mount=type=secret,id=pkg-mirror-host,target=/etc/pkg_mirror_host.txt \
+  if [ -f /etc/pkg_mirror_host.txt ]; then cat /etc/pkg_mirror_host.txt >> /etc/apt/mirrorlist.txt; fi
+
+RUN --mount=type=secret,id=apt-auth-conf,target=/etc/apt/auth.conf.d/apt_auth.conf \
+  apt-get -qq update && apt-get -qq install --no-install-recommends curl git \
   && curl -sL https://deb.nodesource.com/setup_24.x | bash - \
   && apt-get install -y nodejs \
   && node --version
@@ -56,25 +63,22 @@ RUN --mount=type=secret,id=DOCS_BOT_PAT_BASE,mode=0444 \
   . ./build-scripts/fetch-repos.sh
 
 # ------------------------------------------------
-# PROD_DEPS STAGE: Install production dependencies
+# ALL_DEPS STAGE: Install all dependencies
 # ------------------------------------------------
-FROM base AS prod_deps
+FROM base AS all_deps
 USER node:node
 WORKDIR $APP_HOME
 
-# Copy what is needed to run npm ci
 COPY --chown=node:node package.json package-lock.json ./
-
-# Install only production dependencies (skip scripts to avoid husky)
-RUN npm ci --omit=dev --ignore-scripts --registry https://registry.npmjs.org/
-
-# ------------------------------------------------------------
-# ALL_DEPS STAGE: Install all dependencies on top of prod deps
-# ------------------------------------------------------------
-FROM prod_deps AS all_deps
-
-# Install dev dependencies on top of production ones
+COPY --chown=node:node patches patches/
 RUN npm ci --registry https://registry.npmjs.org/
+
+# ------------------------------------------------------------
+# PROD_DEPS STAGE: Strip dev dependencies back out
+# ------------------------------------------------------------
+FROM all_deps AS prod_deps
+
+RUN npm prune --omit=dev --ignore-scripts
 
 # ----------------------------------
 # BUILD STAGE: Build the application
@@ -114,8 +118,11 @@ RUN npm run warmup-remotejson
 # --------------------------------------
 FROM build AS precompute_stage
 
-# Generate precomputed page info
-RUN npm run precompute-pageinfo -- --max-versions 2
+# Generate precomputed page info. Only English + free-pro-team@latest
+# permalinks are cached; cache misses for older versions and translated
+# pages fall through to runtime compute (which is cheap and Fastly-cached
+# per pathname after the first hit).
+RUN npm run precompute-pageinfo -- --max-versions 1
 
 # -------------------------------------------------
 # PRODUCTION STAGE: What will run on the containers

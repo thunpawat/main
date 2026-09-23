@@ -16,7 +16,7 @@ category:
 
 {% data reusables.copilot.personal-instructions-note %}
 
-You can layer multiple types of custom instructions to shape {% data variables.copilot.copilot_chat %} responses. For an overview, see [AUTOTITLE](/copilot/concepts/about-customizing-github-copilot-chat-responses?tool=webui).
+You can layer multiple types of custom instructions to shape {% data variables.copilot.copilot_chat %} responses. For an overview, see [AUTOTITLE](/copilot/concepts/prompting/response-customization?tool=webui).
 
 ## About personal custom instructions for {% data variables.copilot.copilot_chat_short %}
 
@@ -49,13 +49,13 @@ To add personal custom instructions on {% data variables.product.github %}:
 
 Your instructions are now active and remain active until you change or remove them.
 
-{% note %}
+<div class="border rounded-2 p-3">
 
 Did you successfully add personal custom instructions?
 
 <a href="https://docs.github.io/success-test/yes.html" target="_blank" class="btn btn-outline mt-3 mr-3 no-underline"><span>Yes</span></a>  <a href="https://docs.github.io/success-test/no.html" target="_blank" class="btn btn-outline mt-3 mr-3 no-underline"><span>No</span></a>
 
-{% endnote %}
+</div>
 
 ## Further reading
 

@@ -9,6 +9,23 @@ redirect_from:
   - /copilot/using-github-copilot/copilot-chat/prompt-engineering-for-copilot-chat
   - /copilot/concepts/prompt-engineering-for-copilot-chat
   - /copilot/concepts/prompt-engineering
+  - /copilot/tutorials/copilot-cookbook/document-code
+  - /copilot/example-prompts-for-github-copilot-chat/documenting-code
+  - /copilot/copilot-chat-cookbook/documenting-code
+  - /copilot/tutorials/copilot-chat-cookbook/documenting-code
+  - /copilot/tutorials/copilot-chat-cookbook/document-code
+  - /copilot/tutorials/copilot-cookbook/document-code/document-legacy-code
+  - /copilot/example-prompts-for-github-copilot-chat/documenting-code/documenting-legacy-code
+  - /copilot/copilot-chat-cookbook/documenting-code/documenting-legacy-code
+  - /copilot/tutorials/copilot-chat-cookbook/documenting-code/documenting-legacy-code
+  - /copilot/tutorials/copilot-chat-cookbook/documenting-code/document-legacy-code
+  - /copilot/tutorials/copilot-chat-cookbook/document-code/document-legacy-code
+  - /copilot/tutorials/copilot-cookbook/document-code/sync-documentation
+  - /copilot/example-prompts-for-github-copilot-chat/documenting-code/syncing-documentation-with-code-changes
+  - /copilot/copilot-chat-cookbook/documenting-code/syncing-documentation-with-code-changes
+  - /copilot/tutorials/copilot-chat-cookbook/documenting-code/syncing-documentation-with-code-changes
+  - /copilot/tutorials/copilot-chat-cookbook/documenting-code/sync-documentation
+  - /copilot/tutorials/copilot-chat-cookbook/document-code/sync-documentation
 contentType: concepts
 category:
   - Configure Copilot
@@ -86,7 +103,7 @@ Ambiguity can also apply to libraries:
 
 If you are using {% data variables.product.prodname_copilot_short %} in your IDE to get suggestions as you code, open any relevant files and close irrelevant files. {% data variables.product.prodname_copilot_short %} will use the open files to understand your request.
 
-If you are using {% data variables.copilot.copilot_chat_short %} in your IDE, open the file or highlight the code that you want {% data variables.product.prodname_copilot_short %} to reference. You can also use keywords to manually supply context to {% data variables.copilot.copilot_chat_short %}. For example, you can add the `@workspace` chat participant in VS Code, or `@project` in JetBrains IDEs. See [AUTOTITLE](/copilot/using-github-copilot/github-copilot-chat-cheat-sheet).
+If you are using {% data variables.copilot.copilot_chat_short %} in your IDE, open the file or highlight the code that you want {% data variables.product.prodname_copilot_short %} to reference. You can also use keywords to manually supply context to {% data variables.copilot.copilot_chat_short %}. For example, you can add the `@workspace` chat participant in VS Code, or `@project` in JetBrains IDEs. See [AUTOTITLE](/copilot/reference/chat-cheat-sheet).
 
 ## Experiment and iterate
 

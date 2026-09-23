@@ -58,6 +58,7 @@ children:
   - /campaigns
   - /checks
   - /classroom
+  - /code-quality
   - /code-scanning
   - /code-security
   - /codes-of-conduct
@@ -84,14 +85,12 @@ children:
   - /meta
   - /metrics
   - /migrations
-  - /models
   - /oauth-authorizations
   - /orgs
   - /packages
   - /pages
   - /private-registries
   - /projects
-  - /projects-classic
   - /pulls
   - /rate-limit
   - /reactions

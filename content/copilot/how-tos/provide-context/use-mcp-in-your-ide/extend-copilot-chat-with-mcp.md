@@ -20,7 +20,7 @@ category:
 
 ## Introduction
 
-The Model Context Protocol (MCP) is an open standard that defines how applications share context with large language models (LLMs). For an overview of MCP, see [AUTOTITLE](/copilot/concepts/about-mcp).
+The Model Context Protocol (MCP) is an open standard that defines how applications share context with large language models (LLMs). For an overview of MCP, see [AUTOTITLE](/copilot/concepts/context/mcp).
 
 For a curated list of MCP servers from partners and the community, see the [{% data variables.product.github %} MCP Registry](https://github.com/mcp).
 
@@ -64,7 +64,7 @@ The steps below show how to configure the Fetch MCP server in your `.vscode/mcp.
 
 You can use the same steps to configure MCP servers in your personal {% data variables.product.prodname_vscode %} settings. Details on how to configure other MCP servers are available in the [MCP servers repository](https://github.com/modelcontextprotocol/servers/tree/main).
 
-For information on configuring the {% data variables.product.github %} MCP server, see [AUTOTITLE](/copilot/customizing-copilot/using-model-context-protocol/using-the-github-mcp-server).
+For information on configuring the {% data variables.product.github %} MCP server, see [AUTOTITLE](/copilot/how-tos/provide-context/use-mcp-in-your-ide/use-the-github-mcp-server).
 
 1. Add the following configuration to your `.vscode/mcp.json` file:
 
@@ -91,7 +91,7 @@ For information on configuring the {% data variables.product.github %} MCP serve
 
     ![Screenshot of MCP server configuration in {% data variables.product.prodname_vscode %}. The "Start" button is outlined in dark orange. ](/assets/images/help/copilot/mcp-start-server-button.png)
 
-1. Open {% data variables.copilot.copilot_chat_short %} by clicking the {% octicon "copilot" aria-hidden="true" aria-label="copilot" %} icon in the title bar of {% data variables.product.prodname_vscode %}.
+1. Open {% data variables.copilot.copilot_chat_short %} by clicking the chat icon in the title bar of {% data variables.product.prodname_vscode %}.
 1. In the {% data variables.copilot.copilot_chat_short %} box, select **Agent** from the popup menu.
 
     ![Screenshot of the {% data variables.copilot.copilot_chat_short %} box in {% data variables.product.prodname_vscode %}. The "Agent" option is outlined in dark orange.](/assets/images/help/copilot/copilot-chat-agent-option.png)
@@ -250,7 +250,7 @@ You can use the following configurations as examples:
 ## Prerequisites
 
 * **Access to {% data variables.product.prodname_copilot_short %}**. {% data reusables.copilot.subscription-prerequisite %}
-* **{% data variables.product.prodname_copilot %} for Xcode extension**. See [AUTOTITLE](/copilot/configuring-github-copilot/installing-the-github-copilot-extension-in-your-environment).
+* **{% data variables.product.prodname_copilot %} for Xcode extension**. See [AUTOTITLE](/copilot/how-tos/set-up/install-copilot-extension).
 * {% data reusables.copilot.mcp-policy-requirement %}
 
 ## Configuring MCP servers from your MCP registry
@@ -322,6 +322,6 @@ For more information on creating and configuring your own MCP servers, see [the 
 ## Further reading
 
 * [AUTOTITLE](/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers)
-* [AUTOTITLE](/copilot/how-tos/use-copilot-agents/cloud-agent/extend-cloud-agent-with-mcp)
-* [AUTOTITLE](/copilot/customizing-copilot/using-model-context-protocol/using-the-github-mcp-server)
-* [AUTOTITLE](/copilot/tutorials/enhancing-copilot-agent-mode-with-mcp)
+* [AUTOTITLE](/copilot/how-tos/copilot-on-github/customize-copilot/configure-mcp-servers)
+* [AUTOTITLE](/copilot/how-tos/provide-context/use-mcp-in-your-ide/use-the-github-mcp-server)
+* [AUTOTITLE](/copilot/tutorials/enhance-agent-mode-with-mcp)

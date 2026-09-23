@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'url'
 import path from 'path'
-import yaml from 'js-yaml'
+import { load } from 'js-yaml'
 import fs from 'fs/promises'
 
 import slash from 'slash'
@@ -166,7 +166,6 @@ const yamlWalkOptions = {
   includeBasePath: true,
 }
 
-// different lint rules apply to different content types
 let ymlToLint
 
 // compile lists of all the files we want to lint
@@ -199,7 +198,6 @@ function formatLinkError(message: string, links: string[]) {
 
 // Returns `content` if its a string, or `content.description` if it can.
 // Used for getting the nested `description` key in glossary files.
-// Using any because content can be string | { description: string } | other YAML structures
 function getContent(content: unknown) {
   if (typeof content === 'string') return content
   if (
@@ -214,7 +212,7 @@ function getContent(content: unknown) {
 
 const diffFiles = getDiffFiles()
 
-// If present, and not empty, leverage it because in most cases it's empty.
+// If it is present and not empty, use it. In most cases it is empty.
 if (diffFiles.length > 0) {
   // It's faster to do this once and then re-use over and over in the
   // .filter() later on.
@@ -253,14 +251,14 @@ if (ymlToLint.length === 0) {
         let isEarlyAccess: boolean
         let fileContents: string
         // This variable is used to determine if the file was parsed successfully.
-        // When `yaml.load()` fails to parse the file, it is overwritten with the error message.
+        // When `load()` fails to parse the file, it is overwritten with the error message.
         // `false` is intentionally chosen since `null` and `undefined` are valid return values.
         let dictionaryError: unknown = false
 
         beforeAll(async () => {
           fileContents = await fs.readFile(yamlAbsPath!, 'utf8')
           try {
-            dictionary = yaml.load(fileContents, { filename: yamlRelPath })
+            dictionary = load(fileContents, { filename: yamlRelPath })
           } catch (error) {
             dictionaryError = error
           }

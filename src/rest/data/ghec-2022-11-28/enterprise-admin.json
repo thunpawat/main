@@ -459,8 +459,7 @@
           {
             "\"Enterprise administration\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     }
   ],
@@ -786,8 +785,7 @@
           {
             "\"Enterprise administration\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -2037,13 +2035,13 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "day",
             "enum": [
               "hour",
               "day",
               "week",
               "month"
-            ],
-            "default": "day"
+            ]
           }
         },
         {
@@ -2053,6 +2051,7 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "all",
             "enum": [
               "completed",
               "cancelled",
@@ -2062,8 +2061,7 @@
               "denied",
               "open",
               "all"
-            ],
-            "default": "all"
+            ]
           }
         },
         {
@@ -2725,6 +2723,356 @@
     {
       "serverUrl": "https://api.github.com",
       "verb": "post",
+      "requestPath": "/enterprises/{enterprise}/credential-authorizations",
+      "title": "Grant credential authorizations for enterprise organizations",
+      "category": "enterprise-admin",
+      "subcategory": "credential-authorizations",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [
+        {
+          "type": "string",
+          "name": "credential_id",
+          "description": "<p>The SHA-256 fingerprint of the user-owned SSH authentication key to authorize.</p>",
+          "isRequired": true
+        },
+        {
+          "type": "string",
+          "name": "credential_type",
+          "description": "",
+          "isRequired": true,
+          "enum": [
+            "ssh_key"
+          ]
+        },
+        {
+          "type": "array of strings",
+          "name": "organizations",
+          "description": "<p>Organization slugs within the enterprise. A maximum of 50 organizations can be specified.</p>",
+          "isRequired": true
+        }
+      ],
+      "descriptionHTML": "<p>Authorizes an existing user credential for selected organizations in an enterprise. Currently supports personal access tokens (classic)\nand user-owned SSH authentication keys.\nThe authenticated GitHub App must be owned by the enterprise or an organization in the enterprise. The credential\nowner must be a member of every selected organization, and the enterprise must be configured with\nan enterprise-level SSO provider.</p>\n<p>Credential authorizations remain active if the GitHub App is uninstalled or loses permission. They\nremain active until explicitly revoked, the credential is revoked or deleted, or the credential\nowner loses organization membership.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "contentType": "application/json",
+            "description": "Example 1: Status Code 201",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "bodyParameters": {
+              "credential_id": 12345678,
+              "credential_type": "classic_pat",
+              "organizations": [
+                "octo-org",
+                "octo-enterprise-org"
+              ]
+            },
+            "parameters": {
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "201",
+            "contentType": "application/json",
+            "description": "<p>Credential authorizations were granted.</p>",
+            "example": {
+              "credential_id": 12345678,
+              "credential_type": "classic_pat",
+              "organizations": [
+                "octo-enterprise-org",
+                "octo-org"
+              ]
+            },
+            "schema": {
+              "discriminator": {
+                "propertyName": "credential_type"
+              },
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "credential_id": {
+                      "type": "integer"
+                    },
+                    "credential_type": {
+                      "type": "string",
+                      "enum": [
+                        "classic_pat"
+                      ]
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "credential_id",
+                    "credential_type",
+                    "organizations"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "credential_id": {
+                      "type": "integer"
+                    },
+                    "credential_type": {
+                      "type": "string",
+                      "enum": [
+                        "ssh_key"
+                      ]
+                    },
+                    "fingerprint": {
+                      "type": "string",
+                      "description": "The SHA-256 fingerprint of the authorized SSH key."
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "credential_id",
+                    "credential_type",
+                    "fingerprint",
+                    "organizations"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "request": {
+            "contentType": "application/json",
+            "description": "Example 2: Status Code 201",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "bodyParameters": {
+              "credential_id": "SHA256:nThbg6kXUpJWGl7E2H9kGJbIIKnKNNL3V9PzAPPSZ3M",
+              "credential_type": "ssh_key",
+              "organizations": [
+                "octo-org",
+                "octo-enterprise-org"
+              ]
+            },
+            "parameters": {
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "201",
+            "contentType": "application/json",
+            "description": "<p>Credential authorizations were granted.</p>",
+            "example": {
+              "credential_id": 12345679,
+              "credential_type": "ssh_key",
+              "fingerprint": "SHA256:nThbg6kXUpJWGl7E2H9kGJbIIKnKNNL3V9PzAPPSZ3M",
+              "organizations": [
+                "octo-enterprise-org",
+                "octo-org"
+              ]
+            },
+            "schema": {
+              "discriminator": {
+                "propertyName": "credential_type"
+              },
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "credential_id": {
+                      "type": "integer"
+                    },
+                    "credential_type": {
+                      "type": "string",
+                      "enum": [
+                        "classic_pat"
+                      ]
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "credential_id",
+                    "credential_type",
+                    "organizations"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "credential_id": {
+                      "type": "integer"
+                    },
+                    "credential_type": {
+                      "type": "string",
+                      "enum": [
+                        "ssh_key"
+                      ]
+                    },
+                    "fingerprint": {
+                      "type": "string",
+                      "description": "The SHA-256 fingerprint of the authorized SSH key."
+                    },
+                    "organizations": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "credential_id",
+                    "credential_type",
+                    "fingerprint",
+                    "organizations"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "201",
+          "description": "<p>Credential authorizations were granted.</p>"
+        },
+        {
+          "httpStatusCode": "403",
+          "description": "<p>Forbidden</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "409",
+          "description": "<p>Conflict. Returned when credential authorizations are being modified by another request.</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation failed, or the endpoint has been spammed.</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": false,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "write"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "delete",
+      "requestPath": "/enterprises/{enterprise}/credential-authorizations",
+      "title": "Revoke enterprise-delegated credential authorizations",
+      "category": "enterprise-admin",
+      "subcategory": "credential-authorizations",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "integration_id",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          },
+          "description": "<p>The database ID of a GitHub App currently owned by the enterprise or one of its organizations,\nor a formerly owned GitHub App with delegation history for the enterprise.\nWhen provided, only credential authorizations delegated by that App are revoked. When omitted,\nall enterprise-delegated credential authorizations for the enterprise are revoked.</p>"
+        }
+      ],
+      "bodyParameters": [],
+      "descriptionHTML": "<p>Queues revocation of every active organization credential authorization created through enterprise\ndelegation for the enterprise. Credential authorizations created through SAML or other flows are not affected.</p>\n<p>The authenticated GitHub App must be owned by the enterprise or one of its organizations,\ninstalled on the enterprise, and have the <code>enterprise_credentials:write</code> permission.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "202",
+            "contentType": "application/json",
+            "description": "<p>Delegated credential authorization revocation was queued.</p>",
+            "example": {
+              "message": "Enterprise-delegated credential authorization revocation has been queued"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "message"
+              ]
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "202",
+          "description": "<p>Delegated credential authorization revocation was queued.</p>"
+        },
+        {
+          "httpStatusCode": "403",
+          "description": "<p>Forbidden</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": false,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "write"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "post",
       "requestPath": "/enterprises/{enterprise}/credential-authorizations/revoke-all",
       "title": "Revoke all credential authorizations for an enterprise",
       "category": "enterprise-admin",
@@ -2812,8 +3160,332 @@
           {
             "\"Enterprise credentials\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "post",
+      "requestPath": "/enterprises/{enterprise}/credential-authorizations/revoke-credential-type",
+      "title": "Revoke a single credential type for an enterprise",
+      "category": "enterprise-admin",
+      "subcategory": "credential-authorizations",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [
+        {
+          "type": "string",
+          "name": "credential_type",
+          "description": "<p>The type of credential to revoke across the enterprise.</p>",
+          "isRequired": true,
+          "enum": [
+            "classic_pat",
+            "fine_grained_pat",
+            "ssh_key",
+            "oauth_app_token"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "revoke_credentials",
+          "description": "<p>Whether to also destroy the actual credentials of this type owned by\nenterprise members. This option is only available for Enterprise Managed\nUser (EMU) enterprises. When set to <code>true</code>, all credentials of the given\ntype owned by enterprise members will be destroyed in addition to the\ncredential authorizations. Note that <code>oauth_app_token</code> credentials cannot\nbe destroyed; for that type only the credential authorizations are revoked.</p>",
+          "default": false
+        }
+      ],
+      "descriptionHTML": "<p>Revokes a single credential type (for example, classic personal access tokens)\nacross all organizations within the enterprise. This removes the sign-in\nauthorizations for that credential type for every member of the enterprise.</p>\n<p>For Enterprise Managed User (EMU) enterprises, you can optionally also destroy the\nactual credentials of that type owned by enterprise members by setting the\n<code>revoke_credentials</code> parameter to <code>true</code>.</p>\n<p>This operation is performed asynchronously. A background job will be queued to process\nthe revocations.</p>\n<div class=\"ghd-alert ghd-alert-attention\" data-container=\"alert\"><p class=\"ghd-alert-title\"><svg version=\"1.1\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" class=\"octicon mr-2\" aria-hidden><path d=\"M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z\"></path></svg>Warning</p>\n<p>\nIf you use a personal access token to call this endpoint, that token may also be\nrevoked or destroyed as part of this operation.</p>\n</div>\n<p>The authenticated user must be an enterprise owner or have the <code>write_enterprise_credentials</code> permission to use this endpoint.</p>\n<p>OAuth app tokens and personal access tokens (classic) need the <code>admin:enterprise</code> scope to use this endpoint.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "contentType": "application/json",
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "bodyParameters": {
+              "credential_type": "classic_pat",
+              "revoke_credentials": false
+            },
+            "parameters": {
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "202",
+            "contentType": "application/json",
+            "description": "<p>Accepted - The revocation request has been queued</p>",
+            "example": {
+              "message": "Credential type revocation has been queued"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "A message indicating the revocation has been queued"
+                },
+                "warning": {
+                  "type": "string",
+                  "description": "A warning message if the token used for this request may be revoked"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "202",
+          "description": "<p>Accepted - The revocation request has been queued</p>"
+        },
+        {
+          "httpStatusCode": "403",
+          "description": "<p>Forbidden</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation error - The <code>credential_type</code> is missing or invalid, or <code>revoke_credentials</code> is not available for this enterprise</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "write"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "post",
+      "requestPath": "/enterprises/{enterprise}/credential-authorizations/{username}/revoke",
+      "title": "Revoke credential authorizations for a user in an enterprise",
+      "category": "enterprise-admin",
+      "subcategory": "credential-authorizations",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "username",
+          "description": "<p>The handle for the GitHub user account.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [
+        {
+          "type": "boolean",
+          "name": "revoke_credentials",
+          "description": "<p>Whether to also destroy the actual credentials (PATs and SSH keys) owned by\nthe user. This option is only available for Enterprise Managed User (EMU)\nenterprises. When set to <code>true</code>, all PATs (v1 and v2) and SSH keys owned\nby the user will be destroyed in addition to the credential authorizations.</p>",
+          "default": false
+        }
+      ],
+      "descriptionHTML": "<p>Revokes all credential authorizations for a single user within the enterprise.\nThis includes any credential authorizations the user has across all organizations\nin the enterprise.</p>\n<p>For Enterprise Managed User (EMU) enterprises, you can optionally also destroy all\ncredentials (PATs v1, PATs v2, and SSH keys) owned by the user by setting\nthe <code>revoke_credentials</code> parameter to <code>true</code>.</p>\n<p>This operation is performed asynchronously. A background job will be queued to process\nthe revocations.</p>\n<div class=\"ghd-alert ghd-alert-attention\" data-container=\"alert\"><p class=\"ghd-alert-title\"><svg version=\"1.1\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" class=\"octicon mr-2\" aria-hidden><path d=\"M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z\"></path></svg>Warning</p>\n<p>\nIf you use a personal access token to call this endpoint and target yourself, that\ntoken may also be revoked or destroyed as part of this operation.</p>\n</div>\n<p>The authenticated user must be an enterprise owner or have the <code>write_enterprise_credentials</code> permission to use this endpoint.</p>\n<p>OAuth app tokens and personal access tokens (classic) need the <code>admin:enterprise</code> scope to use this endpoint.</p>",
+      "codeExamples": [
+        {
+          "response": {
+            "statusCode": "202",
+            "contentType": "application/json",
+            "description": "<p>Accepted - The revocation request has been queued</p>",
+            "example": {
+              "message": "Credential authorization revocation for user 'octocat' has been queued"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "A message indicating the revocation has been queued"
+                },
+                "warning": {
+                  "type": "string",
+                  "description": "A warning message if the token used for this request may be revoked"
+                }
+              }
+            }
+          },
+          "request": {
+            "contentType": "application/json",
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "bodyParameters": {
+              "revoke_credentials": false
+            },
+            "parameters": {
+              "enterprise": "ENTERPRISE",
+              "username": "USERNAME"
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "202",
+          "description": "<p>Accepted - The revocation request has been queued</p>"
+        },
+        {
+          "httpStatusCode": "403",
+          "description": "<p>Forbidden</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation error - The target user cannot be revoked, or <code>revoke_credentials</code> is not available for this enterprise</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "write"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "post",
+      "requestPath": "/enterprises/{enterprise}/credential-authorizations/{username}/revoke-credential-type",
+      "title": "Revoke a single credential type for a user in an enterprise",
+      "category": "enterprise-admin",
+      "subcategory": "credential-authorizations",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "username",
+          "description": "<p>The handle for the GitHub user account.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [
+        {
+          "type": "string",
+          "name": "credential_type",
+          "description": "<p>The type of credential to revoke for the user.</p>",
+          "isRequired": true,
+          "enum": [
+            "classic_pat",
+            "fine_grained_pat",
+            "ssh_key",
+            "oauth_app_token"
+          ]
+        },
+        {
+          "type": "boolean",
+          "name": "revoke_credentials",
+          "description": "<p>Whether to also destroy the actual credential of this type owned by the\nuser. This option is only available for Enterprise Managed User (EMU)\nenterprises. When set to <code>true</code>, the credential of the given type owned\nby the user will be destroyed in addition to the credential authorizations.\nNote that <code>oauth_app_token</code> credentials cannot be destroyed; for that type\nonly the credential authorizations are revoked.</p>",
+          "default": false
+        }
+      ],
+      "descriptionHTML": "<p>Revokes a single credential type (for example, classic personal access tokens)\nfor a single user within the enterprise. This removes the sign-in authorizations\nfor that credential type across all organizations in the enterprise for the user.</p>\n<p>For Enterprise Managed User (EMU) enterprises, you can optionally also destroy the\nactual credential of that type owned by the user by setting the <code>revoke_credentials</code>\nparameter to <code>true</code>.</p>\n<p>This operation is performed asynchronously. A background job will be queued to process\nthe revocations.</p>\n<div class=\"ghd-alert ghd-alert-attention\" data-container=\"alert\"><p class=\"ghd-alert-title\"><svg version=\"1.1\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" class=\"octicon mr-2\" aria-hidden><path d=\"M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z\"></path></svg>Warning</p>\n<p>\nIf you use a personal access token to call this endpoint and target yourself, that\ntoken may also be revoked or destroyed as part of this operation.</p>\n</div>\n<p>The authenticated user must be an enterprise owner or have the <code>write_enterprise_credentials</code> permission to use this endpoint.</p>\n<p>OAuth app tokens and personal access tokens (classic) need the <code>admin:enterprise</code> scope to use this endpoint.</p>",
+      "codeExamples": [
+        {
+          "response": {
+            "statusCode": "202",
+            "contentType": "application/json",
+            "description": "<p>Accepted - The revocation request has been queued</p>",
+            "example": {
+              "message": "Credential type revocation for user 'octocat' has been queued"
+            },
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "A message indicating the revocation has been queued"
+                },
+                "warning": {
+                  "type": "string",
+                  "description": "A warning message if the token used for this request may be revoked"
+                }
+              }
+            }
+          },
+          "request": {
+            "contentType": "application/json",
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "bodyParameters": {
+              "credential_type": "classic_pat",
+              "revoke_credentials": false
+            },
+            "parameters": {
+              "enterprise": "ENTERPRISE",
+              "username": "USERNAME"
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "202",
+          "description": "<p>Accepted - The revocation request has been queued</p>"
+        },
+        {
+          "httpStatusCode": "403",
+          "description": "<p>Forbidden</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation error - The <code>credential_type</code> is missing or invalid, the target user cannot be revoked, or <code>revoke_credentials</code> is not available for this enterprise</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "write"
+          }
+        ]
       }
     }
   ],
@@ -3005,8 +3677,7 @@
           {
             "\"Custom properties\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -3299,8 +3970,7 @@
           {
             "\"Custom properties\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -3490,8 +4160,7 @@
           {
             "\"Custom properties\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -3671,8 +4340,7 @@
           {
             "\"Custom properties\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -3912,8 +4580,7 @@
           {
             "\"Custom properties\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -3984,8 +4651,7 @@
           {
             "\"Custom properties\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     }
   ],
@@ -4181,8 +4847,7 @@
           {
             "\"Enterprise custom properties for organizations\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -4481,8 +5146,7 @@
           {
             "\"Enterprise custom properties for organizations\" enterprise permissions": "admin"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -4668,8 +5332,7 @@
           {
             "\"Enterprise custom properties for organizations\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -4914,8 +5577,7 @@
           {
             "\"Enterprise custom properties for organizations\" enterprise permissions": "admin"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -4990,8 +5652,7 @@
           {
             "\"Enterprise custom properties for organizations\" enterprise permissions": "admin"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -5092,7 +5753,10 @@
                         "value": {
                           "oneOf": [
                             {
-                              "type": "string"
+                              "type": [
+                                "string",
+                                "null"
+                              ]
                             },
                             {
                               "type": "array",
@@ -5150,8 +5814,7 @@
           {
             "\"Enterprise custom properties for organizations\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -5264,8 +5927,7 @@
           {
             "\"Enterprise custom properties for organizations\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     }
   ],
@@ -5531,8 +6193,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -5607,8 +6268,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -5693,8 +6353,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -5779,8 +6438,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -5855,8 +6513,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -5941,8 +6598,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -6027,8 +6683,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -6260,8 +6915,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -6446,8 +7100,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -6820,8 +7473,7 @@
           {
             "\"Custom enterprise roles\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     }
   ],
@@ -7259,8 +7911,7 @@
           {
             "\"Enterprise administration\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -7370,8 +8021,7 @@
           {
             "\"Enterprise administration\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -7554,8 +8204,362 @@
           {
             "\"Enterprise administration\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "get",
+      "requestPath": "/enterprises/{enterprise}/visual-studio-subscriptions",
+      "title": "Get a list of Visual Studio subscriptions for the enterprise",
+      "category": "enterprise-admin",
+      "subcategory": "licensing",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "<p>The slug version of the enterprise name</p>"
+        },
+        {
+          "name": "is_unmatched_only",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "boolean"
+          },
+          "description": "<p>When true, only returns Visual Studio subscriptions that are not matched to a GitHub user.</p>"
+        },
+        {
+          "name": "per_page",
+          "description": "<p>The number of results per page (max 100). For more information, see \"<a href=\"https://docs.github.com/enterprise-cloud@latest/rest/using-the-rest-api/using-pagination-in-the-rest-api\">Using pagination in the REST API</a>.\"</p>",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "default": 30
+          }
+        },
+        {
+          "name": "page",
+          "description": "<p>The page number of the results to fetch. For more information, see \"<a href=\"https://docs.github.com/enterprise-cloud@latest/rest/using-the-rest-api/using-pagination-in-the-rest-api\">Using pagination in the REST API</a>.\"</p>",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "default": 1
+          }
+        }
+      ],
+      "bodyParameters": [],
+      "descriptionHTML": "<p>Retrieves a list of Visual Studio subscriptions for the specified enterprise.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "200",
+            "contentType": "application/json",
+            "description": "<p>Response</p>",
+            "example": {
+              "total_count": 1,
+              "visual_studio_subscription_assignments": [
+                {
+                  "email": "test@example.com",
+                  "subscriptionId": "00000000-0000-0000-0000-000000000000",
+                  "username": "gh-user",
+                  "manual_match": true
+                }
+              ]
+            },
+            "schema": {
+              "type": "object",
+              "required": [
+                "total_count",
+                "visual_studio_subscriptions"
+              ],
+              "properties": {
+                "total_count": {
+                  "type": "integer"
+                },
+                "visual_studio_subscriptions": {
+                  "type": "array",
+                  "items": {
+                    "title": "Visual Studio Subscription Assignment",
+                    "description": "Visual Studio Subscription Assignment",
+                    "type": "object",
+                    "properties": {
+                      "visual_studio_subscription_email": {
+                        "type": "string",
+                        "description": "The email associated with the Visual Studio subscription assignment in the visual studio portal."
+                      },
+                      "subscription_id": {
+                        "type": "string",
+                        "description": "The ID of the Visual Studio Subscription. This is a GUID that comes from the Visual Studio management portal."
+                      },
+                      "username": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "The GitHub username of the user associated with the Visual Studio subscription assignment."
+                      },
+                      "manual_match": {
+                        "type": "boolean",
+                        "description": "Indicates if the Visual Studio subscription assignment was manually matched to a user."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "200",
+          "description": "<p>OK</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise Licensing\" enterprise permissions": "read"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "put",
+      "requestPath": "/enterprises/{enterprise}/visual-studio-subscriptions/{visual_studio_subscription_id}",
+      "title": "Add or update a Visual Studio subscription user match",
+      "category": "enterprise-admin",
+      "subcategory": "licensing",
+      "parameters": [
+        {
+          "name": "visual_studio_subscription_id",
+          "description": "<p>The ID of the Visual Studio subscription to add or update the match for. This is a GUID that comes from the Visual Studio management portal.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "enterprise",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "<p>The slug version of the enterprise name</p>"
+        }
+      ],
+      "bodyParameters": [
+        {
+          "type": "string",
+          "name": "user_identifier",
+          "description": "<p>The handle for the GitHub user account or a verified email associated with their account.</p>"
+        }
+      ],
+      "descriptionHTML": "<p>Updates a manual match between a user and a Visual Studio subscription.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "contentType": "application/json",
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "bodyParameters": {
+              "user_identifier": "monalisa"
+            },
+            "parameters": {
+              "visual_studio_subscription_id": "VISUAL_STUDIO_SUBSCRIPTION_ID",
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "200",
+            "contentType": "application/json",
+            "description": "<p>Response</p>",
+            "example": {
+              "visual_studio_subscription_email": "test@example.com",
+              "subscription_id": "00000000-0000-0000-0000-000000000000",
+              "username": "gh-user",
+              "manual_match": true
+            },
+            "schema": {
+              "title": "Visual Studio Subscription Assignment",
+              "description": "Visual Studio Subscription Assignment",
+              "type": "object",
+              "properties": {
+                "visual_studio_subscription_email": {
+                  "type": "string",
+                  "description": "The email associated with the Visual Studio subscription assignment in the visual studio portal."
+                },
+                "subscription_id": {
+                  "type": "string",
+                  "description": "The ID of the Visual Studio Subscription. This is a GUID that comes from the Visual Studio management portal."
+                },
+                "username": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "The GitHub username of the user associated with the Visual Studio subscription assignment."
+                },
+                "manual_match": {
+                  "type": "boolean",
+                  "description": "Indicates if the Visual Studio subscription assignment was manually matched to a user."
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "200",
+          "description": "<p>OK</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation failed, or the endpoint has been spammed.</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise Licensing\" enterprise permissions": "write"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "delete",
+      "requestPath": "/enterprises/{enterprise}/visual-studio-subscriptions/{visual_studio_subscription_id}",
+      "title": "Delete a Visual Studio subscription user match",
+      "category": "enterprise-admin",
+      "subcategory": "licensing",
+      "parameters": [
+        {
+          "name": "visual_studio_subscription_id",
+          "description": "<p>The ID of the Visual Studio subscription to delete the match for. This is a GUID that comes from the visual studio management portal.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "enterprise",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "<p>The slug version of the enterprise name</p>"
+        }
+      ],
+      "bodyParameters": [],
+      "descriptionHTML": "<p>Deletes a manual match between a user and a Visual Studio subscription.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "visual_studio_subscription_id": "VISUAL_STUDIO_SUBSCRIPTION_ID",
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "200",
+            "contentType": "application/json",
+            "description": "<p>Response</p>",
+            "example": {
+              "visual_studio_subscription_email": "test@example.com",
+              "subscription_id": "00000000-0000-0000-0000-000000000000",
+              "username": null,
+              "manual_match": false
+            },
+            "schema": {
+              "title": "Visual Studio Subscription Assignment",
+              "description": "Visual Studio Subscription Assignment",
+              "type": "object",
+              "properties": {
+                "visual_studio_subscription_email": {
+                  "type": "string",
+                  "description": "The email associated with the Visual Studio subscription assignment in the visual studio portal."
+                },
+                "subscription_id": {
+                  "type": "string",
+                  "description": "The ID of the Visual Studio Subscription. This is a GUID that comes from the Visual Studio management portal."
+                },
+                "username": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "The GitHub username of the user associated with the Visual Studio subscription assignment."
+                },
+                "manual_match": {
+                  "type": "boolean",
+                  "description": "Indicates if the Visual Studio subscription assignment was manually matched to a user."
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "200",
+          "description": "<p>OK</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation failed, or the endpoint has been spammed.</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise Licensing\" enterprise permissions": "write"
+          }
+        ]
       }
     }
   ],
@@ -8430,8 +9434,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -8555,8 +9558,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -8673,7 +9675,7 @@
                   "permissions": {
                     "title": "App Permissions",
                     "type": "object",
-                    "description": "The permissions granted to the user access token.",
+                    "description": "The permissions granted to the fine-grained access token.",
                     "properties": {
                       "actions": {
                         "type": "string",
@@ -8952,6 +9954,7 @@
                         "type": "string",
                         "description": "The level of permission to grant the access token for managing access to GitHub Copilot for members of an organization with a Copilot Business subscription. This property is in public preview and is subject to change.",
                         "enum": [
+                          "read",
                           "write"
                         ]
                       },
@@ -9184,8 +10187,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -9542,7 +10544,7 @@
                 "permissions": {
                   "title": "App Permissions",
                   "type": "object",
-                  "description": "The permissions granted to the user access token.",
+                  "description": "The permissions granted to the fine-grained access token.",
                   "properties": {
                     "actions": {
                       "type": "string",
@@ -9821,6 +10823,7 @@
                       "type": "string",
                       "description": "The level of permission to grant the access token for managing access to GitHub Copilot for members of an organization with a Copilot Business subscription. This property is in public preview and is subject to change.",
                       "enum": [
+                        "read",
                         "write"
                       ]
                     },
@@ -10215,8 +11218,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -10297,8 +11299,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -10432,8 +11433,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -10796,7 +11796,7 @@
                 "permissions": {
                   "title": "App Permissions",
                   "type": "object",
-                  "description": "The permissions granted to the user access token.",
+                  "description": "The permissions granted to the fine-grained access token.",
                   "properties": {
                     "actions": {
                       "type": "string",
@@ -11075,6 +12075,7 @@
                       "type": "string",
                       "description": "The level of permission to grant the access token for managing access to GitHub Copilot for members of an organization with a Copilot Business subscription. This property is in public preview and is subject to change.",
                       "enum": [
+                        "read",
                         "write"
                       ]
                     },
@@ -11468,8 +12469,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -11599,8 +12599,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -11734,8 +12733,7 @@
           {
             "\"Enterprise organization installations\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     }
   ],
@@ -12550,6 +13548,44 @@
                       "name": "dismiss_stale_reviews_on_push",
                       "description": "<p>New, reviewable commits pushed will dismiss previous pull request review approvals.</p>",
                       "isRequired": true
+                    },
+                    {
+                      "type": "object",
+                      "name": "dismissal_restriction",
+                      "description": "<p>Specify people, teams, or apps allowed to dismiss pull request reviews.</p>",
+                      "childParamsGroups": [
+                        {
+                          "type": "array of objects",
+                          "name": "allowed_actors",
+                          "description": "<p>Specify people, teams, or apps allowed to dismiss pull request reviews.</p>",
+                          "childParamsGroups": [
+                            {
+                              "type": "integer",
+                              "name": "id",
+                              "description": "<p>ID of the actor that can dismiss reviews.</p>",
+                              "isRequired": true
+                            },
+                            {
+                              "type": "string",
+                              "name": "type",
+                              "description": "<p>The type of the actor</p>",
+                              "isRequired": true,
+                              "enum": [
+                                "User",
+                                "Team",
+                                "IntegrationInstallation",
+                                "RepositoryRole"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "boolean",
+                          "name": "enabled",
+                          "description": "<p>Whether to restrict review dismissal to specific actors.</p>",
+                          "isRequired": true
+                        }
+                      ]
                     },
                     {
                       "type": "boolean",
@@ -13949,6 +14985,49 @@
                                 "type": "boolean",
                                 "description": "New, reviewable commits pushed will dismiss previous pull request review approvals."
                               },
+                              "dismissal_restriction": {
+                                "title": "DismissalRestriction",
+                                "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                "type": "object",
+                                "properties": {
+                                  "allowed_actors": {
+                                    "type": "array",
+                                    "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                    "items": {
+                                      "title": "Actor",
+                                      "description": "An actor allowed to dismiss pull request reviews",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer",
+                                          "description": "ID of the actor that can dismiss reviews."
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "description": "The type of the actor",
+                                          "enum": [
+                                            "User",
+                                            "Team",
+                                            "IntegrationInstallation",
+                                            "RepositoryRole"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "type"
+                                      ]
+                                    }
+                                  },
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether to restrict review dismissal to specific actors."
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ]
+                              },
                               "require_code_owner_review": {
                                 "type": "boolean",
                                 "description": "Require an approving review in pull requests that modify files that have a designated code owner."
@@ -14458,6 +15537,75 @@
                         }
                       },
                       {
+                        "title": "code_quality",
+                        "description": "Choose which severity levels of code quality results should block pull request merges. When configured, a code quality analysis must be done on the pull request before the changes can be merged.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "code_quality"
+                            ]
+                          },
+                          "parameters": {
+                            "type": "object",
+                            "properties": {
+                              "severity": {
+                                "type": "string",
+                                "description": "The lowest severity level at which code quality reviews need to be resolved before commits can be merged.",
+                                "enum": [
+                                  "errors",
+                                  "warnings",
+                                  "notes",
+                                  "all"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "severity"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "title": "code_coverage",
+                        "description": "Enforce minimum line coverage thresholds on pull requests. When configured, uploaded coverage data must meet the specified criteria before changes can be merged.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "code_coverage"
+                            ]
+                          },
+                          "parameters": {
+                            "type": "object",
+                            "properties": {
+                              "max_coverage_drop": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "The maximum percentage points that line coverage may drop relative to the default branch. Pull requests that reduce line coverage by more than this amount will be blocked.",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "minimum_coverage": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "The absolute minimum line coverage percentage required. Pull requests with line coverage below this threshold will be blocked.",
+                                "minimum": 0,
+                                "maximum": 100
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
                         "title": "copilot_code_review",
                         "description": "Request Copilot code review for new pull requests automatically if the author has access to Copilot code review and their premium requests quota has not reached the limit.",
                         "type": "object",
@@ -14483,6 +15631,22 @@
                                 "description": "Copilot automatically reviews each new push to the pull request."
                               }
                             }
+                          }
+                        }
+                      },
+                      {
+                        "title": "license_compliance_scanning",
+                        "description": "Enforce any added or changed dependencies to comply with the organization's license policy.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "license_compliance_scanning"
+                            ]
                           }
                         }
                       },
@@ -14647,8 +15811,7 @@
           {
             "\"Enterprise administration\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -15383,6 +16546,49 @@
                                 "type": "boolean",
                                 "description": "New, reviewable commits pushed will dismiss previous pull request review approvals."
                               },
+                              "dismissal_restriction": {
+                                "title": "DismissalRestriction",
+                                "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                "type": "object",
+                                "properties": {
+                                  "allowed_actors": {
+                                    "type": "array",
+                                    "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                    "items": {
+                                      "title": "Actor",
+                                      "description": "An actor allowed to dismiss pull request reviews",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer",
+                                          "description": "ID of the actor that can dismiss reviews."
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "description": "The type of the actor",
+                                          "enum": [
+                                            "User",
+                                            "Team",
+                                            "IntegrationInstallation",
+                                            "RepositoryRole"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "type"
+                                      ]
+                                    }
+                                  },
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether to restrict review dismissal to specific actors."
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ]
+                              },
                               "require_code_owner_review": {
                                 "type": "boolean",
                                 "description": "Require an approving review in pull requests that modify files that have a designated code owner."
@@ -15892,6 +17098,75 @@
                         }
                       },
                       {
+                        "title": "code_quality",
+                        "description": "Choose which severity levels of code quality results should block pull request merges. When configured, a code quality analysis must be done on the pull request before the changes can be merged.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "code_quality"
+                            ]
+                          },
+                          "parameters": {
+                            "type": "object",
+                            "properties": {
+                              "severity": {
+                                "type": "string",
+                                "description": "The lowest severity level at which code quality reviews need to be resolved before commits can be merged.",
+                                "enum": [
+                                  "errors",
+                                  "warnings",
+                                  "notes",
+                                  "all"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "severity"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "title": "code_coverage",
+                        "description": "Enforce minimum line coverage thresholds on pull requests. When configured, uploaded coverage data must meet the specified criteria before changes can be merged.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "code_coverage"
+                            ]
+                          },
+                          "parameters": {
+                            "type": "object",
+                            "properties": {
+                              "max_coverage_drop": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "The maximum percentage points that line coverage may drop relative to the default branch. Pull requests that reduce line coverage by more than this amount will be blocked.",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "minimum_coverage": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "The absolute minimum line coverage percentage required. Pull requests with line coverage below this threshold will be blocked.",
+                                "minimum": 0,
+                                "maximum": 100
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
                         "title": "copilot_code_review",
                         "description": "Request Copilot code review for new pull requests automatically if the author has access to Copilot code review and their premium requests quota has not reached the limit.",
                         "type": "object",
@@ -15917,6 +17192,22 @@
                                 "description": "Copilot automatically reviews each new push to the pull request."
                               }
                             }
+                          }
+                        }
+                      },
+                      {
+                        "title": "license_compliance_scanning",
+                        "description": "Enforce any added or changed dependencies to comply with the organization's license policy.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "license_compliance_scanning"
+                            ]
                           }
                         }
                       },
@@ -16081,8 +17372,7 @@
           {
             "\"Enterprise administration\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -16901,6 +18191,44 @@
                       "name": "dismiss_stale_reviews_on_push",
                       "description": "<p>New, reviewable commits pushed will dismiss previous pull request review approvals.</p>",
                       "isRequired": true
+                    },
+                    {
+                      "type": "object",
+                      "name": "dismissal_restriction",
+                      "description": "<p>Specify people, teams, or apps allowed to dismiss pull request reviews.</p>",
+                      "childParamsGroups": [
+                        {
+                          "type": "array of objects",
+                          "name": "allowed_actors",
+                          "description": "<p>Specify people, teams, or apps allowed to dismiss pull request reviews.</p>",
+                          "childParamsGroups": [
+                            {
+                              "type": "integer",
+                              "name": "id",
+                              "description": "<p>ID of the actor that can dismiss reviews.</p>",
+                              "isRequired": true
+                            },
+                            {
+                              "type": "string",
+                              "name": "type",
+                              "description": "<p>The type of the actor</p>",
+                              "isRequired": true,
+                              "enum": [
+                                "User",
+                                "Team",
+                                "IntegrationInstallation",
+                                "RepositoryRole"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "boolean",
+                          "name": "enabled",
+                          "description": "<p>Whether to restrict review dismissal to specific actors.</p>",
+                          "isRequired": true
+                        }
+                      ]
                     },
                     {
                       "type": "boolean",
@@ -18301,6 +19629,49 @@
                                 "type": "boolean",
                                 "description": "New, reviewable commits pushed will dismiss previous pull request review approvals."
                               },
+                              "dismissal_restriction": {
+                                "title": "DismissalRestriction",
+                                "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                "type": "object",
+                                "properties": {
+                                  "allowed_actors": {
+                                    "type": "array",
+                                    "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                    "items": {
+                                      "title": "Actor",
+                                      "description": "An actor allowed to dismiss pull request reviews",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer",
+                                          "description": "ID of the actor that can dismiss reviews."
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "description": "The type of the actor",
+                                          "enum": [
+                                            "User",
+                                            "Team",
+                                            "IntegrationInstallation",
+                                            "RepositoryRole"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "type"
+                                      ]
+                                    }
+                                  },
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether to restrict review dismissal to specific actors."
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ]
+                              },
                               "require_code_owner_review": {
                                 "type": "boolean",
                                 "description": "Require an approving review in pull requests that modify files that have a designated code owner."
@@ -18810,6 +20181,75 @@
                         }
                       },
                       {
+                        "title": "code_quality",
+                        "description": "Choose which severity levels of code quality results should block pull request merges. When configured, a code quality analysis must be done on the pull request before the changes can be merged.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "code_quality"
+                            ]
+                          },
+                          "parameters": {
+                            "type": "object",
+                            "properties": {
+                              "severity": {
+                                "type": "string",
+                                "description": "The lowest severity level at which code quality reviews need to be resolved before commits can be merged.",
+                                "enum": [
+                                  "errors",
+                                  "warnings",
+                                  "notes",
+                                  "all"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "severity"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "title": "code_coverage",
+                        "description": "Enforce minimum line coverage thresholds on pull requests. When configured, uploaded coverage data must meet the specified criteria before changes can be merged.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "code_coverage"
+                            ]
+                          },
+                          "parameters": {
+                            "type": "object",
+                            "properties": {
+                              "max_coverage_drop": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "The maximum percentage points that line coverage may drop relative to the default branch. Pull requests that reduce line coverage by more than this amount will be blocked.",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "minimum_coverage": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "The absolute minimum line coverage percentage required. Pull requests with line coverage below this threshold will be blocked.",
+                                "minimum": 0,
+                                "maximum": 100
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
                         "title": "copilot_code_review",
                         "description": "Request Copilot code review for new pull requests automatically if the author has access to Copilot code review and their premium requests quota has not reached the limit.",
                         "type": "object",
@@ -18835,6 +20275,22 @@
                                 "description": "Copilot automatically reviews each new push to the pull request."
                               }
                             }
+                          }
+                        }
+                      },
+                      {
+                        "title": "license_compliance_scanning",
+                        "description": "Enforce any added or changed dependencies to comply with the organization's license policy.",
+                        "type": "object",
+                        "required": [
+                          "type"
+                        ],
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "license_compliance_scanning"
+                            ]
                           }
                         }
                       },
@@ -18999,8 +20455,7 @@
           {
             "\"Enterprise administration\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -19071,8 +20526,7 @@
           {
             "\"Enterprise administration\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -19406,10 +20860,7 @@
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string",
-            "examples": [
-              "members"
-            ]
+            "type": "string"
           }
         },
         {
@@ -19419,11 +20870,7 @@
           "required": false,
           "schema": {
             "type": "integer",
-            "default": 1,
-            "format": "int32",
-            "examples": [
-              1
-            ]
+            "default": 1
           }
         },
         {
@@ -19433,11 +20880,7 @@
           "required": false,
           "schema": {
             "type": "integer",
-            "default": 30,
-            "format": "int32",
-            "examples": [
-              1
-            ]
+            "default": 30
           }
         },
         {
@@ -19694,8 +21137,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -19972,8 +21414,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -19990,10 +21431,7 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "string",
-            "examples": [
-              "7fce0092-d52e-4f76-b727-3955bd72c939"
-            ]
+            "type": "string"
           }
         },
         {
@@ -20002,10 +21440,7 @@
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string",
-            "examples": [
-              "members"
-            ]
+            "type": "string"
           }
         },
         {
@@ -20219,8 +21654,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -20237,10 +21671,7 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "string",
-            "examples": [
-              "7fce0092-d52e-4f76-b727-3955bd72c939"
-            ]
+            "type": "string"
           }
         },
         {
@@ -20680,8 +22111,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -20698,10 +22128,7 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "string",
-            "examples": [
-              "7fce0092-d52e-4f76-b727-3955bd72c939"
-            ]
+            "type": "string"
           }
         },
         {
@@ -21150,8 +22577,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -21168,10 +22594,7 @@
           "in": "path",
           "required": true,
           "schema": {
-            "type": "string",
-            "examples": [
-              "7fce0092-d52e-4f76-b727-3955bd72c939"
-            ]
+            "type": "string"
           }
         },
         {
@@ -21241,8 +22664,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -21269,11 +22691,7 @@
           "required": false,
           "schema": {
             "type": "integer",
-            "default": 1,
-            "format": "int32",
-            "examples": [
-              1
-            ]
+            "default": 1
           }
         },
         {
@@ -21283,11 +22701,7 @@
           "required": false,
           "schema": {
             "type": "integer",
-            "default": 30,
-            "format": "int32",
-            "examples": [
-              1
-            ]
+            "default": 30
           }
         },
         {
@@ -21619,8 +23033,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -22344,8 +23757,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -22657,8 +24069,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "read"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -23129,8 +24540,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -24009,8 +25419,7 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -24097,8 +25506,1844 @@
           {
             "\"Enterprise SCIM\" enterprise permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
+      }
+    }
+  ],
+  "security-advisories": [
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "post",
+      "requestPath": "/enterprises/{enterprise}/innersource-vulnerabilities/sync",
+      "title": "Sync innersource vulnerabilities for an enterprise",
+      "category": "enterprise-admin",
+      "subcategory": "security-advisories",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [
+        {
+          "type": "array of objects",
+          "name": "vulnerabilities",
+          "description": "<p>Array of vulnerabilities in OSV format to synchronize</p>",
+          "isRequired": true,
+          "childParamsGroups": [
+            {
+              "type": "string",
+              "name": "id",
+              "description": "<p>Unique identifier for the vulnerability from the external system</p>",
+              "isRequired": true
+            },
+            {
+              "type": "string",
+              "name": "schema_version",
+              "description": "<p>The OSV schema version</p>"
+            },
+            {
+              "type": "string",
+              "name": "summary",
+              "description": "<p>A short summary of the vulnerability</p>"
+            },
+            {
+              "type": "string",
+              "name": "details",
+              "description": "<p>Detailed description of the vulnerability</p>"
+            },
+            {
+              "type": "array of strings",
+              "name": "aliases",
+              "description": "<p>IDs for the same vulnerability in other databases. Only CVE IDs are used (to populate the vulnerability's CVE identifier); other aliases are ignored.</p>"
+            },
+            {
+              "type": "array of objects",
+              "name": "severity",
+              "description": "<p>Severity information for the vulnerability</p>",
+              "childParamsGroups": [
+                {
+                  "type": "string",
+                  "name": "type",
+                  "description": "<p>The type of severity scoring (e.g., CVSS_V3)</p>"
+                },
+                {
+                  "type": "string",
+                  "name": "score",
+                  "description": "<p>The severity score or vector string</p>"
+                }
+              ]
+            },
+            {
+              "type": "array of objects",
+              "name": "affected",
+              "description": "<p>Packages and versions affected by the vulnerability</p>",
+              "childParamsGroups": [
+                {
+                  "type": "object",
+                  "name": "package",
+                  "description": "",
+                  "childParamsGroups": [
+                    {
+                      "type": "string",
+                      "name": "ecosystem",
+                      "description": "<p>The package ecosystem (e.g., npm, pip, maven)</p>"
+                    },
+                    {
+                      "type": "string",
+                      "name": "name",
+                      "description": "<p>The package name</p>"
+                    }
+                  ]
+                },
+                {
+                  "type": "array of objects",
+                  "name": "ranges",
+                  "description": "",
+                  "childParamsGroups": [
+                    {
+                      "type": "string",
+                      "name": "type",
+                      "description": ""
+                    },
+                    {
+                      "type": "array of objects",
+                      "name": "events",
+                      "description": "",
+                      "childParamsGroups": [
+                        {
+                          "type": "string",
+                          "name": "introduced",
+                          "description": "<p>The version that introduced the vulnerability</p>"
+                        },
+                        {
+                          "type": "string",
+                          "name": "fixed",
+                          "description": "<p>The version that fixed the vulnerability</p>"
+                        },
+                        {
+                          "type": "string",
+                          "name": "last_affected",
+                          "description": "<p>The last affected version</p>"
+                        },
+                        {
+                          "type": "string",
+                          "name": "limit",
+                          "description": "<p>The upper limit of the affected range</p>"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "array of objects",
+              "name": "references",
+              "description": "<p>URLs for more information about the vulnerability</p>",
+              "childParamsGroups": [
+                {
+                  "type": "string",
+                  "name": "type",
+                  "description": "<p>The type of reference. Supported values: PACKAGE, ADVISORY, WEB, FIX, ARTICLE, REPORT, EVIDENCE. References with other types are ignored.</p>"
+                },
+                {
+                  "type": "string",
+                  "name": "url",
+                  "description": "<p>The reference URL</p>"
+                }
+              ]
+            },
+            {
+              "type": "string",
+              "name": "published",
+              "description": "<p>When the vulnerability was first published</p>"
+            },
+            {
+              "type": "string",
+              "name": "modified",
+              "description": "<p>When the vulnerability was last modified</p>"
+            },
+            {
+              "type": "string",
+              "name": "withdrawn",
+              "description": "<p>When the vulnerability was withdrawn. If present, the vulnerability will be marked as withdrawn.</p>"
+            }
+          ]
+        }
+      ],
+      "descriptionHTML": "<p>Synchronize innersource vulnerability data with the Advisory Database for an enterprise.\nThis endpoint receives vulnerability data in OSV format and creates, updates, or withdraws\ninnersource vulnerabilities accordingly. Dependabot alerting is triggered for created and\nupdated vulnerabilities.</p>\n<p>The request body accepts up to 100 vulnerabilities per call. The request is validated and\nthen queued for asynchronous processing: a successful request returns <code>202 Accepted</code> with a\n<code>Location</code> header pointing to a status URL that you poll for the final result.</p>\n<p>Syncing vulnerabilities too quickly using this endpoint may result in secondary rate limiting. For more information, see \"<a href=\"https://docs.github.com/enterprise-cloud@latest/rest/using-the-rest-api/rate-limits-for-the-rest-api#about-secondary-rate-limits\">Rate limits for the API</a>\" and \"<a href=\"https://docs.github.com/enterprise-cloud@latest/rest/guides/best-practices-for-using-the-rest-api\">Best practices for using the REST API</a>.\"</p>\n<p>This endpoint does not support OAuth apps or personal access tokens.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "contentType": "application/json",
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "bodyParameters": {
+              "vulnerabilities": [
+                {
+                  "id": "MVS-2026-001",
+                  "schema_version": "1.4.0",
+                  "summary": "Example vulnerability summary",
+                  "aliases": [
+                    "GHSA-xxxx-xxxx-xxxx"
+                  ],
+                  "affected": [
+                    {
+                      "package": {
+                        "ecosystem": "npm",
+                        "name": "example-package"
+                      },
+                      "ranges": [
+                        {
+                          "type": "SEMVER",
+                          "events": [
+                            {
+                              "introduced": "1.0.0"
+                            },
+                            {
+                              "fixed": "1.0.1"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "parameters": {
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "202",
+            "contentType": "application/json",
+            "description": "<p>Sync operation accepted for asynchronous processing. Poll the returned URL for results.</p>",
+            "example": {
+              "id": "external-vulnerability-sync-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+              "url": "https://api.github.com/enterprises/my-enterprise/innersource-vulnerabilities/sync/status/external-vulnerability-sync-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+              "status": "queued"
+            },
+            "schema": {
+              "title": "External Vulnerability Sync Accepted",
+              "description": "Response when an external vulnerability sync request is accepted for asynchronous processing",
+              "type": "object",
+              "required": [
+                "id",
+                "url",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Job status ID for polling"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "URL to poll for sync results",
+                  "format": "uri"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Initial job status",
+                  "enum": [
+                    "queued"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "202",
+          "description": "<p>Sync operation accepted for asynchronous processing. Poll the returned URL for results.</p>"
+        },
+        {
+          "httpStatusCode": "400",
+          "description": "<p>Bad Request</p>"
+        },
+        {
+          "httpStatusCode": "401",
+          "description": "<p>Requires authentication</p>"
+        },
+        {
+          "httpStatusCode": "403",
+          "description": "<p>Forbidden</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation failed, or the endpoint has been spammed.</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": false,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise innersource vulnerabilities\" enterprise permissions": "write"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "get",
+      "requestPath": "/enterprises/{enterprise}/innersource-vulnerabilities/sync/status/{job_id}",
+      "title": "Get innersource vulnerability sync status for an enterprise",
+      "category": "enterprise-admin",
+      "subcategory": "security-advisories",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "job_id",
+          "in": "path",
+          "required": true,
+          "description": "<p>The unique identifier of the sync job.</p>",
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [],
+      "descriptionHTML": "<p>Get the status of an asynchronous innersource vulnerability sync operation for an enterprise.\nReturns 202 with a <code>Retry-After</code> header while the sync is still processing, or 200 with\nthe full sync results once complete.</p>\n<p>This endpoint does not support OAuth apps or personal access tokens.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "description": "Example 1: Status Code 200",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "enterprise": "ENTERPRISE",
+              "job_id": "JOB_ID"
+            }
+          },
+          "response": {
+            "statusCode": "200",
+            "contentType": "application/json",
+            "description": "<p>Sync operation completed</p>",
+            "example": {
+              "processed": 1,
+              "created": 1,
+              "updated": 0,
+              "withdrawn": 0,
+              "errors": 0,
+              "results": [
+                {
+                  "external_id": "MVS-2026-001",
+                  "status": "created",
+                  "ghsa_id": "GHIS-xxxx-xxxx-xxxx"
+                }
+              ]
+            },
+            "schema": {
+              "oneOf": [
+                {
+                  "title": "External Vulnerability Sync Result",
+                  "description": "Result of an external vulnerability synchronization operation",
+                  "type": "object",
+                  "required": [
+                    "processed",
+                    "created",
+                    "updated",
+                    "withdrawn",
+                    "errors",
+                    "results"
+                  ],
+                  "properties": {
+                    "processed": {
+                      "type": "integer",
+                      "description": "Total number of vulnerabilities processed"
+                    },
+                    "created": {
+                      "type": "integer",
+                      "description": "Number of new vulnerabilities created"
+                    },
+                    "updated": {
+                      "type": "integer",
+                      "description": "Number of existing vulnerabilities updated"
+                    },
+                    "withdrawn": {
+                      "type": "integer",
+                      "description": "Number of vulnerabilities marked as withdrawn"
+                    },
+                    "errors": {
+                      "type": "integer",
+                      "description": "Number of vulnerabilities that failed to process"
+                    },
+                    "results": {
+                      "type": "array",
+                      "description": "Detailed result for each processed vulnerability",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "external_id",
+                          "status"
+                        ],
+                        "properties": {
+                          "external_id": {
+                            "type": "string",
+                            "description": "The external ID of the vulnerability (corresponds to the `id` field in the request payload)"
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "The processing status",
+                            "enum": [
+                              "created",
+                              "updated",
+                              "withdrawn",
+                              "error"
+                            ]
+                          },
+                          "ghsa_id": {
+                            "type": "string",
+                            "description": "The advisory ID assigned to the vulnerability. For innersource vulnerabilities this is a GHIS ID. Present for successful operations."
+                          },
+                          "error": {
+                            "type": "string",
+                            "description": "Error message (present only when status is 'error')"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "error"
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "request": {
+            "description": "Example 2: Status Code 200",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "enterprise": "ENTERPRISE",
+              "job_id": "JOB_ID"
+            }
+          },
+          "response": {
+            "statusCode": "200",
+            "contentType": "application/json",
+            "description": "<p>Sync operation completed</p>",
+            "example": {
+              "status": "error",
+              "error": "Internal error processing vulnerabilities"
+            },
+            "schema": {
+              "oneOf": [
+                {
+                  "title": "External Vulnerability Sync Result",
+                  "description": "Result of an external vulnerability synchronization operation",
+                  "type": "object",
+                  "required": [
+                    "processed",
+                    "created",
+                    "updated",
+                    "withdrawn",
+                    "errors",
+                    "results"
+                  ],
+                  "properties": {
+                    "processed": {
+                      "type": "integer",
+                      "description": "Total number of vulnerabilities processed"
+                    },
+                    "created": {
+                      "type": "integer",
+                      "description": "Number of new vulnerabilities created"
+                    },
+                    "updated": {
+                      "type": "integer",
+                      "description": "Number of existing vulnerabilities updated"
+                    },
+                    "withdrawn": {
+                      "type": "integer",
+                      "description": "Number of vulnerabilities marked as withdrawn"
+                    },
+                    "errors": {
+                      "type": "integer",
+                      "description": "Number of vulnerabilities that failed to process"
+                    },
+                    "results": {
+                      "type": "array",
+                      "description": "Detailed result for each processed vulnerability",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "external_id",
+                          "status"
+                        ],
+                        "properties": {
+                          "external_id": {
+                            "type": "string",
+                            "description": "The external ID of the vulnerability (corresponds to the `id` field in the request payload)"
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "The processing status",
+                            "enum": [
+                              "created",
+                              "updated",
+                              "withdrawn",
+                              "error"
+                            ]
+                          },
+                          "ghsa_id": {
+                            "type": "string",
+                            "description": "The advisory ID assigned to the vulnerability. For innersource vulnerabilities this is a GHIS ID. Present for successful operations."
+                          },
+                          "error": {
+                            "type": "string",
+                            "description": "Error message (present only when status is 'error')"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "error"
+                      ]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "request": {
+            "description": "Example 3: Status Code 202",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "enterprise": "ENTERPRISE",
+              "job_id": "JOB_ID"
+            }
+          },
+          "response": {
+            "statusCode": "202",
+            "contentType": "application/json",
+            "description": "<p>Sync operation is still processing</p>",
+            "example": {
+              "id": "external-vulnerability-sync-a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+              "status": "processing"
+            },
+            "schema": {
+              "title": "External Vulnerability Sync Status",
+              "description": "Status of an in-progress external vulnerability sync operation",
+              "type": "object",
+              "required": [
+                "id",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Job status ID"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "Current processing status",
+                  "enum": [
+                    "processing"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "200",
+          "description": "<p>Sync operation completed</p>"
+        },
+        {
+          "httpStatusCode": "202",
+          "description": "<p>Sync operation is still processing</p>"
+        },
+        {
+          "httpStatusCode": "401",
+          "description": "<p>Requires authentication</p>"
+        },
+        {
+          "httpStatusCode": "403",
+          "description": "<p>Forbidden</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": false,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise innersource vulnerabilities\" enterprise permissions": "write"
+          }
+        ]
+      }
+    }
+  ],
+  "token-inventory": [
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "get",
+      "requestPath": "/enterprises/{enterprise}/credentials",
+      "title": "List enterprise token inventory",
+      "category": "enterprise-admin",
+      "subcategory": "token-inventory",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "per_page",
+          "description": "<p>The number of results per page (max 100). For more information, see \"<a href=\"https://docs.github.com/enterprise-cloud@latest/rest/using-the-rest-api/using-pagination-in-the-rest-api\">Using pagination in the REST API</a>.\"</p>",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "default": 30
+          }
+        },
+        {
+          "name": "after",
+          "description": "<p>A cursor, as given in the <code>Link</code> header, for the next page of results.</p>",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "token_types",
+          "description": "<p>A comma-separated list of credential types to filter by.</p>",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "authorization_state",
+          "description": "<p>Filter by enterprise-access status.</p>",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "currently_authorized",
+              "member_owned_only"
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "description": "<p>Filter to credentials owned by this user, given as a login.</p>",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "organization",
+          "description": "<p>Filter to credentials authorized to this organization in the enterprise, given as a login.</p>",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "application",
+          "description": "<p>Filter to credentials for this application, given as a GitHub App slug or an OAuth App client id.</p>",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [],
+      "descriptionHTML": "<p>Lists an enterprise's credential inventory: both credentials currently authorized to access the enterprise and credentials owned by enterprise members that have no current enterprise authorization. Covers personal access tokens (classic and fine-grained), OAuth App and GitHub App user tokens, SSH keys, GitHub App installations, and federated credentials, assembled on demand from the canonical sources. Results are paginated with an opaque cursor via the <code>Link</code> header; there is no total count.</p>\n<p>You must be an enterprise owner (or hold a role with the \"View enterprise credentials\" permission) to use this endpoint.</p>\n<p>OAuth app tokens and personal access tokens (classic) require the <code>read:enterprise</code> scope to access this endpoint.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "200",
+            "contentType": "application/json",
+            "description": "<p>Response</p>",
+            "example": [
+              {
+                "inventory_id": "MDEyMzQ1Njc4OWFiY2RlZg",
+                "credential_id": 987654,
+                "hashed_token": "K7gNU3sdo+OL0wNhqoVWhr3g6s1xYv72ol/pe/Unols=",
+                "fingerprint": null,
+                "item_type": "credential",
+                "credential_type": "classic_pat",
+                "display_name": "ci-automation",
+                "owner": {
+                  "id": 1,
+                  "login": "octocat"
+                },
+                "owner_type": "user",
+                "application": null,
+                "credential_state": "active",
+                "authorization_state": "currently_authorized",
+                "effective_access_state": "effective",
+                "state_reason": null,
+                "created_at": "2024-01-15T09:00:00Z",
+                "last_used_at": "2024-06-01T12:30:00Z",
+                "expires_at": "2025-01-15T09:00:00Z",
+                "next_expires_at": "2025-01-15T09:00:00Z",
+                "credential_instance_count": 1,
+                "enterprise_authorized": false,
+                "authorization_count": 1,
+                "authorized_organizations": [
+                  {
+                    "id": 10,
+                    "login": "acme-eng"
+                  }
+                ],
+                "age_days": 138,
+                "never_expires": false,
+                "past_expiration_policy": false,
+                "past_expiration_policy_basis": "enforced_limit",
+                "expiry_unknown": false,
+                "scopes": [
+                  "repo",
+                  "read:org"
+                ],
+                "permissions": null,
+                "repository_selection": null
+              },
+              {
+                "inventory_id": "ZmVkY2JhOTg3NjU0MzIxMA",
+                "credential_id": 246810,
+                "hashed_token": "B4iMbnUY6xW/eOlR2nDqA9pKz3sVt1cX8mZ0jL5wQpE=",
+                "fingerprint": null,
+                "item_type": "credential",
+                "credential_type": "oauth_app_user_token",
+                "display_name": "Acme Deploy",
+                "owner": {
+                  "id": 2,
+                  "login": "hubot"
+                },
+                "owner_type": "user",
+                "application": {
+                  "id": 42,
+                  "name": "Acme Deploy"
+                },
+                "credential_state": "active",
+                "authorization_state": "currently_authorized",
+                "effective_access_state": "effective",
+                "state_reason": null,
+                "created_at": "2024-03-10T14:00:00Z",
+                "last_used_at": "2024-06-02T08:15:00Z",
+                "expires_at": null,
+                "next_expires_at": null,
+                "credential_instance_count": 1,
+                "enterprise_authorized": false,
+                "authorization_count": 2,
+                "authorized_organizations": [
+                  {
+                    "id": 10,
+                    "login": "acme-eng"
+                  },
+                  {
+                    "id": 11,
+                    "login": "acme-ops"
+                  }
+                ],
+                "age_days": 83,
+                "never_expires": true,
+                "past_expiration_policy": false,
+                "past_expiration_policy_basis": "proposed_baseline",
+                "expiry_unknown": false,
+                "scopes": [
+                  "read:user",
+                  "repo"
+                ],
+                "permissions": null,
+                "repository_selection": null
+              },
+              {
+                "inventory_id": "c3NoLWtleS1leGFtcGxlLTAwMQ",
+                "credential_id": null,
+                "hashed_token": null,
+                "fingerprint": "SHA256:nThbg6kXUpJWGl7E1IGOCspRomTxdCARLviKw6E5SY8",
+                "item_type": "credential",
+                "credential_type": "ssh_key",
+                "display_name": "laptop-2024",
+                "owner": {
+                  "id": 3,
+                  "login": "monalisa"
+                },
+                "owner_type": "user",
+                "application": null,
+                "credential_state": "active",
+                "authorization_state": "currently_authorized",
+                "effective_access_state": "effective",
+                "state_reason": null,
+                "created_at": "2023-11-01T10:00:00Z",
+                "last_used_at": "2024-05-20T16:45:00Z",
+                "expires_at": null,
+                "next_expires_at": null,
+                "credential_instance_count": 1,
+                "enterprise_authorized": false,
+                "authorization_count": 1,
+                "authorized_organizations": [
+                  {
+                    "id": 10,
+                    "login": "acme-eng"
+                  }
+                ],
+                "age_days": 213,
+                "never_expires": true,
+                "past_expiration_policy": true,
+                "past_expiration_policy_basis": "proposed_baseline",
+                "expiry_unknown": false,
+                "scopes": null,
+                "permissions": null,
+                "repository_selection": null
+              },
+              {
+                "inventory_id": "YWJjZGVmMDEyMzQ1Njc4OQ",
+                "credential_id": 135790,
+                "hashed_token": null,
+                "fingerprint": null,
+                "item_type": "credential",
+                "credential_type": "fine_grained_pat",
+                "display_name": "release-bot",
+                "owner": {
+                  "id": 3,
+                  "login": "monalisa"
+                },
+                "owner_type": "user",
+                "application": null,
+                "credential_state": "active",
+                "authorization_state": "currently_authorized",
+                "effective_access_state": "effective",
+                "state_reason": null,
+                "created_at": "2024-05-01T10:00:00Z",
+                "last_used_at": "2024-06-03T16:45:00Z",
+                "expires_at": "2024-11-01T10:00:00Z",
+                "next_expires_at": "2024-11-01T10:00:00Z",
+                "credential_instance_count": 1,
+                "enterprise_authorized": false,
+                "authorization_count": 1,
+                "authorized_organizations": [
+                  {
+                    "id": 10,
+                    "login": "acme-eng"
+                  }
+                ],
+                "age_days": 45,
+                "never_expires": false,
+                "past_expiration_policy": false,
+                "past_expiration_policy_basis": "enforced_limit",
+                "expiry_unknown": false,
+                "scopes": null,
+                "permissions": {
+                  "contents": "read",
+                  "pull_requests": "write"
+                },
+                "repository_selection": "subset"
+              }
+            ],
+            "schema": {
+              "type": "array",
+              "items": {
+                "title": "Enterprise Token Inventory Item",
+                "description": "A credential or GitHub App installation in an enterprise's token inventory.",
+                "type": "object",
+                "required": [
+                  "inventory_id",
+                  "item_type",
+                  "credential_type",
+                  "credential_state",
+                  "authorization_state",
+                  "effective_access_state",
+                  "enterprise_authorized",
+                  "authorization_count",
+                  "authorized_organizations"
+                ],
+                "properties": {
+                  "inventory_id": {
+                    "type": "string",
+                    "description": "Opaque identifier for retrieving this item within the enterprise. Its value can differ between responses for the same credential."
+                  },
+                  "credential_id": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "The credential's ID for audit-log correlation, unique only within its `credential_type`. Null for SSH keys, GitHub App installations, and federated credentials."
+                  },
+                  "hashed_token": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Base64-encoded SHA-256 hash of the token, matching `hashed_token` in audit events. Null when not reported."
+                  },
+                  "fingerprint": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "The SSH key's SHA-256 fingerprint, matching audit events. Null for other credential types."
+                  },
+                  "item_type": {
+                    "type": "string",
+                    "enum": [
+                      "credential",
+                      "token_issuer_principal"
+                    ]
+                  },
+                  "credential_type": {
+                    "type": "string",
+                    "enum": [
+                      "classic_pat",
+                      "oauth_app_user_token",
+                      "github_app_user_token",
+                      "fine_grained_pat",
+                      "ssh_key",
+                      "github_app_installation",
+                      "federated_jti"
+                    ]
+                  },
+                  "display_name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "owner": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "login": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "owner_type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "user",
+                      "oauth_application",
+                      "github_app",
+                      null
+                    ],
+                    "description": "The type of credential owner."
+                  },
+                  "application": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "credential_state": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "expired",
+                      "revoked",
+                      "deleted"
+                    ]
+                  },
+                  "authorization_state": {
+                    "type": "string",
+                    "enum": [
+                      "currently_authorized",
+                      "member_owned_only"
+                    ]
+                  },
+                  "effective_access_state": {
+                    "type": "string",
+                    "enum": [
+                      "effective",
+                      "not_effective",
+                      "unknown"
+                    ]
+                  },
+                  "state_reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "created_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "last_used_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "next_expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "credential_instance_count": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "enterprise_authorized": {
+                    "type": "boolean",
+                    "description": "Whether the item is authorized directly at the enterprise level."
+                  },
+                  "authorization_count": {
+                    "type": "integer",
+                    "description": "Number of authorizing organizations, plus one when `enterprise_authorized` is true."
+                  },
+                  "authorized_organizations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "login": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "age_days": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "description": "Age of the credential in whole days at assembly time."
+                  },
+                  "never_expires": {
+                    "type": "boolean",
+                    "description": "Whether this is an active credential with no expiration. False for GitHub App installations and credentials with unknown expiration."
+                  },
+                  "past_expiration_policy": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Whether the credential exceeds a configured lifetime limit or an advisory age baseline. Null when not evaluated."
+                  },
+                  "past_expiration_policy_basis": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "enforced_limit",
+                      "proposed_baseline",
+                      null
+                    ],
+                    "description": "The basis for `past_expiration_policy`: an enforced PAT lifetime limit or an advisory age baseline."
+                  },
+                  "expiry_unknown": {
+                    "type": "boolean",
+                    "description": "Whether the credential's expiration could not be determined."
+                  },
+                  "scopes": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "OAuth scopes recorded for the token. Null when not reported for the credential type."
+                  },
+                  "permissions": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "type": "string"
+                    },
+                    "description": "Permissions by resource for fine-grained PATs and GitHub App installations. Null when not reported; an empty object means no recorded permissions."
+                  },
+                  "repository_selection": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "all",
+                      "subset",
+                      "none",
+                      null
+                    ],
+                    "description": "Repository selection for the credential. Null when not reported; `none` means no repositories are selected."
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "200",
+          "description": "<p>OK</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation failed</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "read"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "post",
+      "requestPath": "/enterprises/{enterprise}/credentials/exports",
+      "title": "Create an enterprise token inventory export",
+      "category": "enterprise-admin",
+      "subcategory": "token-inventory",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [
+        {
+          "type": "array of strings",
+          "name": "token_types",
+          "description": "<p>The credential types to include.</p>"
+        },
+        {
+          "type": "string",
+          "name": "authorization_state",
+          "description": "<p>Filter by enterprise-access status.</p>",
+          "enum": [
+            "currently_authorized",
+            "member_owned_only"
+          ]
+        },
+        {
+          "type": "string",
+          "name": "owner",
+          "description": "<p>Filter to credentials owned by this user, given as a login.</p>"
+        },
+        {
+          "type": "string",
+          "name": "organization",
+          "description": "<p>Filter to credentials authorized to this organization in the enterprise, given as a login.</p>"
+        },
+        {
+          "type": "string",
+          "name": "application",
+          "description": "<p>Filter to credentials for this application, given as a GitHub App slug or an OAuth App client id.</p>"
+        }
+      ],
+      "descriptionHTML": "<p>Starts an asynchronous CSV export of the enterprise token inventory and returns an opaque export id to poll. Limited to a small number of exports per enterprise per day.</p>\n<p>The generated file is UTF-8 CSV with a header row, using RFC 4180 field quoting and escaping and LF (<code>\\n</code>) line endings. Timestamps are ISO-8601 in UTC (for example, <code>2026-09-15T12:00:00Z</code>). An empty cell means the value is null or unknown, never <code>false</code>. Multi-value cells join their entries with <code>; </code> — this includes <code>scopes</code> and <code>permissions</code>, where each permission is encoded as a <code>resource:action</code> pair (for example, <code>contents:write; issues:read</code>). The file has one row per (credential, authorizing organization); the credential columns repeat while <code>organization_id</code> and <code>organization</code> vary, and a credential with no organization grant appears once with empty organization columns. <code>authorization_count</code> is the credential's total number of organization authorizations across the enterprise, plus one when <code>enterprise_authorized</code> is true, independent of any filters applied to the export. <code>credential_id</code> is a raw source-table id that can collide across credential types, so it is unique only together with <code>credential_type</code>, and only for the types that populate it (classic and fine-grained PATs, OAuth and GitHub App user tokens); SSH keys are keyed by <code>fingerprint</code>, while GitHub App installations and federated JTIs have no unique per-row column. <code>owner_type</code> (<code>user</code>, <code>oauth_application</code>, or <code>github_app</code>) disambiguates the id space of <code>owner_id</code>. <code>expiry_status</code> is <code>expires</code>, <code>never</code>, or <code>unknown</code> — <code>unknown</code> marks a credential whose expiration could not be determined, so a blank <code>expires_at</code> is never mistaken for one that never expires.</p>\n<p>You must be an enterprise owner (or hold a role with the \"View enterprise credentials\" permission) to use this endpoint.</p>\n<p>OAuth app tokens and personal access tokens (classic) require the <code>read:enterprise</code> scope to access this endpoint.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "contentType": "application/json",
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "bodyParameters": {
+              "owner": "octocat"
+            },
+            "parameters": {
+              "enterprise": "ENTERPRISE"
+            }
+          },
+          "response": {
+            "statusCode": "202",
+            "contentType": "application/json",
+            "description": "<p>Accepted</p>",
+            "example": {
+              "export_id": "7b99499081e815c76d819dabdab70202df7fa01adf9a84803ca43963edb6a507",
+              "status": "queued",
+              "as_of": "2026-07-30 21:00:00 UTC"
+            },
+            "schema": {
+              "title": "Enterprise Token Inventory Export",
+              "description": "The status of an asynchronous enterprise token inventory CSV export.",
+              "type": "object",
+              "required": [
+                "export_id",
+                "status"
+              ],
+              "properties": {
+                "export_id": {
+                  "type": "string",
+                  "description": "Opaque id for the export, used to poll its status."
+                },
+                "status": {
+                  "type": "string",
+                  "description": "The state of the export job.",
+                  "enum": [
+                    "pending",
+                    "queued",
+                    "started",
+                    "success",
+                    "error"
+                  ]
+                },
+                "as_of": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "When the export was requested."
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "202",
+          "description": "<p>Accepted</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        },
+        {
+          "httpStatusCode": "422",
+          "description": "<p>Validation failed</p>"
+        },
+        {
+          "httpStatusCode": "429",
+          "description": "<p>Too many requests</p>"
+        },
+        {
+          "httpStatusCode": "500",
+          "description": "<p>Internal error, for example the export job could not be enqueued.</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "read"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "get",
+      "requestPath": "/enterprises/{enterprise}/credentials/exports/{export_id}",
+      "title": "Get an enterprise token inventory export",
+      "category": "enterprise-admin",
+      "subcategory": "token-inventory",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "export_id",
+          "description": "<p>The opaque id of the export, as returned when it was created.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [],
+      "descriptionHTML": "<p>Returns the status of an enterprise token inventory export. Once the export is ready this redirects to a short-lived URL to download the CSV.</p>\n<p>You must be an enterprise owner (or hold a role with the \"View enterprise credentials\" permission) to use this endpoint.</p>\n<p>OAuth app tokens and personal access tokens (classic) require the <code>read:enterprise</code> scope to access this endpoint.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "enterprise": "ENTERPRISE",
+              "export_id": "EXPORT_ID"
+            }
+          },
+          "response": {
+            "statusCode": "200",
+            "contentType": "application/json",
+            "description": "<p>Response</p>",
+            "example": {
+              "export_id": "7b99499081e815c76d819dabdab70202df7fa01adf9a84803ca43963edb6a507",
+              "status": "queued",
+              "as_of": "2026-07-30 21:00:00 UTC"
+            },
+            "schema": {
+              "title": "Enterprise Token Inventory Export",
+              "description": "The status of an asynchronous enterprise token inventory CSV export.",
+              "type": "object",
+              "required": [
+                "export_id",
+                "status"
+              ],
+              "properties": {
+                "export_id": {
+                  "type": "string",
+                  "description": "Opaque id for the export, used to poll its status."
+                },
+                "status": {
+                  "type": "string",
+                  "description": "The state of the export job.",
+                  "enum": [
+                    "pending",
+                    "queued",
+                    "started",
+                    "success",
+                    "error"
+                  ]
+                },
+                "as_of": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "When the export was requested."
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "200",
+          "description": "<p>OK</p>"
+        },
+        {
+          "httpStatusCode": "302",
+          "description": "<p>The export is ready; redirects to a short-lived download URL.</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "read"
+          }
+        ]
+      }
+    },
+    {
+      "serverUrl": "https://api.github.com",
+      "verb": "get",
+      "requestPath": "/enterprises/{enterprise}/credentials/{inventory_id}",
+      "title": "Get an enterprise token inventory item",
+      "category": "enterprise-admin",
+      "subcategory": "token-inventory",
+      "parameters": [
+        {
+          "name": "enterprise",
+          "description": "<p>The slug version of the enterprise name.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "inventory_id",
+          "description": "<p>The opaque inventory_id returned by the list endpoint for this enterprise. Pass it unchanged. Its value can differ for the same credential between responses.</p>",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "bodyParameters": [],
+      "descriptionHTML": "<p>Returns a single credential from the enterprise token inventory. Use the opaque <code>inventory_id</code> returned by the list endpoint for the same enterprise.</p>\n<p>You must be an enterprise owner (or hold a role with the \"View enterprise credentials\" permission) to use this endpoint.</p>\n<p>OAuth app tokens and personal access tokens (classic) require the <code>read:enterprise</code> scope to access this endpoint.</p>",
+      "codeExamples": [
+        {
+          "request": {
+            "description": "Example",
+            "acceptHeader": "application/vnd.github.v3+json",
+            "parameters": {
+              "enterprise": "ENTERPRISE",
+              "inventory_id": "INVENTORY_ID"
+            }
+          },
+          "response": {
+            "statusCode": "200",
+            "contentType": "application/json",
+            "description": "<p>Response</p>",
+            "example": {
+              "inventory_id": "MDEyMzQ1Njc4OWFiY2RlZg",
+              "credential_id": 987654,
+              "hashed_token": "K7gNU3sdo+OL0wNhqoVWhr3g6s1xYv72ol/pe/Unols=",
+              "fingerprint": null,
+              "item_type": "credential",
+              "credential_type": "classic_pat",
+              "display_name": "ci-automation",
+              "owner": {
+                "id": 1,
+                "login": "octocat"
+              },
+              "owner_type": "user",
+              "application": null,
+              "credential_state": "active",
+              "authorization_state": "currently_authorized",
+              "effective_access_state": "effective",
+              "state_reason": null,
+              "created_at": "2024-01-15T09:00:00Z",
+              "last_used_at": "2024-06-01T12:30:00Z",
+              "expires_at": "2025-01-15T09:00:00Z",
+              "next_expires_at": "2025-01-15T09:00:00Z",
+              "credential_instance_count": 1,
+              "enterprise_authorized": false,
+              "authorization_count": 1,
+              "authorized_organizations": [
+                {
+                  "id": 10,
+                  "login": "acme-eng"
+                }
+              ],
+              "age_days": 138,
+              "never_expires": false,
+              "past_expiration_policy": false,
+              "past_expiration_policy_basis": "enforced_limit",
+              "expiry_unknown": false,
+              "scopes": [
+                "repo",
+                "read:org"
+              ],
+              "permissions": null,
+              "repository_selection": null
+            },
+            "schema": {
+              "title": "Enterprise Token Inventory Item",
+              "description": "A credential or GitHub App installation in an enterprise's token inventory.",
+              "type": "object",
+              "required": [
+                "inventory_id",
+                "item_type",
+                "credential_type",
+                "credential_state",
+                "authorization_state",
+                "effective_access_state",
+                "enterprise_authorized",
+                "authorization_count",
+                "authorized_organizations"
+              ],
+              "properties": {
+                "inventory_id": {
+                  "type": "string",
+                  "description": "Opaque identifier for retrieving this item within the enterprise. Its value can differ between responses for the same credential."
+                },
+                "credential_id": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "The credential's ID for audit-log correlation, unique only within its `credential_type`. Null for SSH keys, GitHub App installations, and federated credentials."
+                },
+                "hashed_token": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Base64-encoded SHA-256 hash of the token, matching `hashed_token` in audit events. Null when not reported."
+                },
+                "fingerprint": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "The SSH key's SHA-256 fingerprint, matching audit events. Null for other credential types."
+                },
+                "item_type": {
+                  "type": "string",
+                  "enum": [
+                    "credential",
+                    "token_issuer_principal"
+                  ]
+                },
+                "credential_type": {
+                  "type": "string",
+                  "enum": [
+                    "classic_pat",
+                    "oauth_app_user_token",
+                    "github_app_user_token",
+                    "fine_grained_pat",
+                    "ssh_key",
+                    "github_app_installation",
+                    "federated_jti"
+                  ]
+                },
+                "display_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "owner": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "login": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "owner_type": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "user",
+                    "oauth_application",
+                    "github_app",
+                    null
+                  ],
+                  "description": "The type of credential owner."
+                },
+                "application": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                },
+                "credential_state": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "expired",
+                    "revoked",
+                    "deleted"
+                  ]
+                },
+                "authorization_state": {
+                  "type": "string",
+                  "enum": [
+                    "currently_authorized",
+                    "member_owned_only"
+                  ]
+                },
+                "effective_access_state": {
+                  "type": "string",
+                  "enum": [
+                    "effective",
+                    "not_effective",
+                    "unknown"
+                  ]
+                },
+                "state_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "created_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "last_used_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "expires_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "next_expires_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date-time"
+                },
+                "credential_instance_count": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "enterprise_authorized": {
+                  "type": "boolean",
+                  "description": "Whether the item is authorized directly at the enterprise level."
+                },
+                "authorization_count": {
+                  "type": "integer",
+                  "description": "Number of authorizing organizations, plus one when `enterprise_authorized` is true."
+                },
+                "authorized_organizations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "login": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "age_days": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "description": "Age of the credential in whole days at assembly time."
+                },
+                "never_expires": {
+                  "type": "boolean",
+                  "description": "Whether this is an active credential with no expiration. False for GitHub App installations and credentials with unknown expiration."
+                },
+                "past_expiration_policy": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "description": "Whether the credential exceeds a configured lifetime limit or an advisory age baseline. Null when not evaluated."
+                },
+                "past_expiration_policy_basis": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "enforced_limit",
+                    "proposed_baseline",
+                    null
+                  ],
+                  "description": "The basis for `past_expiration_policy`: an enforced PAT lifetime limit or an advisory age baseline."
+                },
+                "expiry_unknown": {
+                  "type": "boolean",
+                  "description": "Whether the credential's expiration could not be determined."
+                },
+                "scopes": {
+                  "type": [
+                    "array",
+                    "null"
+                  ],
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "OAuth scopes recorded for the token. Null when not reported for the credential type."
+                },
+                "permissions": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "Permissions by resource for fine-grained PATs and GitHub App installations. Null when not reported; an empty object means no recorded permissions."
+                },
+                "repository_selection": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "all",
+                    "subset",
+                    "none",
+                    null
+                  ],
+                  "description": "Repository selection for the credential. Null when not reported; `none` means no repositories are selected."
+                }
+              }
+            }
+          }
+        }
+      ],
+      "statusCodes": [
+        {
+          "httpStatusCode": "200",
+          "description": "<p>OK</p>"
+        },
+        {
+          "httpStatusCode": "404",
+          "description": "<p>Resource not found</p>"
+        }
+      ],
+      "previews": [],
+      "progAccess": {
+        "userToServerRest": true,
+        "serverToServer": true,
+        "fineGrainedPat": false,
+        "permissions": [
+          {
+            "\"Enterprise credentials\" enterprise permissions": "read"
+          }
+        ]
       }
     }
   ]

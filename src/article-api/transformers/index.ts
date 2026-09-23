@@ -15,12 +15,10 @@ import { JourneyLandingTransformer } from './journey-landing-transformer'
 import { CategoryLandingTransformer } from './category-landing-transformer'
 import { DiscoveryLandingTransformer } from './discovery-landing-transformer'
 import { SearchPageTransformer } from './search-page-transformer'
+import { ReleaseNotesTransformer } from './release-notes-transformer'
 import { ArticleTransformer } from './article-transformer'
 
-/**
- * Global transformer registry
- * Registers all available page-to-markdown transformers
- */
+// Every page-to-markdown transformer is registered here.
 export const transformerRegistry = new TransformerRegistry()
 
 transformerRegistry.register(new RestTransformer())
@@ -39,7 +37,8 @@ transformerRegistry.register(new JourneyLandingTransformer())
 transformerRegistry.register(new CategoryLandingTransformer())
 transformerRegistry.register(new DiscoveryLandingTransformer())
 transformerRegistry.register(new SearchPageTransformer())
-// ArticleTransformer is the catch-all — must be registered last.
+transformerRegistry.register(new ReleaseNotesTransformer())
+// ArticleTransformer is the catch-all, so it must be registered last.
 transformerRegistry.register(new ArticleTransformer())
 
 export { TransformerRegistry } from './types'

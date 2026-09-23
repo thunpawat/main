@@ -66,7 +66,7 @@ export const contentTypesEnum = [
 
 // Values supported in the docsTeamMetrics frontmatter property. Used to track
 // related articles (e.g. by feature or subject) that may span different directories.
-export const docsTeamMetricsEnum = ['copilot-cli']
+export const docsTeamMetricsEnum = ['ai-governance', 'copilot-cli', 'enterprise-onboarding']
 
 export const schema: Schema = {
   type: 'object',
@@ -286,8 +286,8 @@ export const schema: Schema = {
       type: 'string',
       enum: ['mac', 'windows', 'linux'],
     },
-    // Tool-specific content preference, the list of tools are kept in
-    // make it easier to update in a single place
+    // Tool-specific content preference.
+    // The tool list lives in allTools so it only has to be updated in one place.
     defaultTool: {
       type: 'string',
       enum: Object.keys(allTools),
@@ -353,7 +353,6 @@ export const schema: Schema = {
         'webhooks',
       ],
     },
-    // START category-landing tags
     category: {
       type: 'array',
       errorMessage: `must be an array, which is written in frontmatter like:
@@ -363,13 +362,15 @@ category:
     complexity: {
       type: 'array',
     },
+    surface: {
+      type: 'array',
+    },
     industry: {
       type: 'array',
     },
     octicon: {
       type: 'string',
     },
-    // END category landing tags
     // Custom sidebar link for category pages
     sidebarLink: {
       type: 'object',
@@ -404,6 +405,17 @@ category:
       },
       description: 'Array of articles to feature in the spotlight section',
     },
+    // Filters to display on cookbook-style category landing pages.
+    // Allowed values: 'category' (always shown), 'surface', 'complexity'.
+    filters: {
+      type: 'array',
+      items: {
+        type: 'string',
+        enum: ['category', 'surface', 'complexity'],
+      },
+      description:
+        'Which filter menus to display on the category landing page. The category filter is always shown.',
+    },
     // Carousels configuration for category landing pages (supports multiple carousels)
     carousels: {
       type: 'object',
@@ -430,7 +442,6 @@ category:
   },
 }
 
-// returns a list of deprecated properties
 export const deprecatedProperties = Object.keys(schema.properties).filter((prop: string) => {
   return (schema.properties as Record<string, SchemaProperty>)[prop].deprecated
 })

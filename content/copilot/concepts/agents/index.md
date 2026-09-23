@@ -9,13 +9,17 @@ children:
   - /cloud-agent
   - /copilot-cli
   - /github-copilot-app
+  - /copilot-in-jetbrains
   - /code-review
+  - /about-github-agentic-workflows
   - /copilot-memory
   - /hooks
-  - /about-third-party-agents
+  - /about-plugins
+  - /about-third-party-coding-agents
+  - /agent-apps
   - /openai-codex
   - /anthropic-claude
   - /about-agent-skills
-  - /enterprise-management
 contentType: concepts
 ---
+

@@ -73,7 +73,6 @@ describe('get-data', () => {
   })
 
   test('getDataByLanguage variables English', () => {
-    // The most basic test
     {
       const result = getDataByLanguage('variables.stuff.foo', 'en')
       expect(result).toBe('Foo')
@@ -91,7 +90,6 @@ describe('get-data', () => {
   })
 
   test('getDataByLanguage variables with non-English', () => {
-    // The most basic test
     {
       const result = getDataByLanguage('variables.stuff.foo', 'ja')
       expect(result).toBe('フー')
@@ -109,7 +107,6 @@ describe('get-data', () => {
   })
 
   test('getDataByLanguage variables failures', () => {
-    // The most basic test
     {
       const result = getDataByLanguage('variables.stuff.key_non_existent', 'en')
       expect(result).toBeUndefined()
@@ -127,7 +124,6 @@ describe('get-data', () => {
   })
 
   test('getDataByLanguage reusables English', () => {
-    // The most basic test
     {
       const result = getDataByLanguage('reusables.coolness', 'en')
       expect(result).toBe('This is *Markdown*')
@@ -140,7 +136,6 @@ describe('get-data', () => {
   })
 
   test('getDataByLanguage reusables non-English', () => {
-    // The most basic test
     {
       const result = getDataByLanguage('reusables.coolness', 'ja')
       expect(result).toBe('これがマークダウンです')
@@ -153,7 +148,6 @@ describe('get-data', () => {
   })
 
   test('getDataByLanguage failures', () => {
-    // The most basic test
     {
       const result = getDataByLanguage('reusables.neverheardof', 'en')
       expect(result).toBeUndefined()
@@ -166,28 +160,26 @@ describe('get-data', () => {
   })
 
   test('getUIDataMerged', () => {
-    // The most basic test
     {
       const result = getUIDataMerged('en')
       expect(result.key).toBe('Value')
-      expect(result.deep.er).toBe('Depth')
+      expect((result.deep as Record<string, string>).er).toBe('Depth')
     }
     // In a specific language
     {
       const result = getUIDataMerged('ja')
       expect(result.key).toBe('価値')
-      expect(result.deep.er).toBe('深さ')
+      expect((result.deep as Record<string, string>).er).toBe('深さ')
       // Note how it falls back to English on that key
-      expect(result.deep.est).toBe('Deepest')
+      expect((result.deep as Record<string, string>).est).toBe('Deepest')
     }
   })
 
   test('getDeepDataByLanguage', () => {
-    // The most basic test
     {
       const result = getDeepDataByLanguage('variables', 'en')
-      expect(result.stuff.foo).toBe('Foo')
-      expect(result.stuff.bar).toBe('Bar')
+      expect((result.stuff as Record<string, string>).foo).toBe('Foo')
+      expect((result.stuff as Record<string, string>).bar).toBe('Bar')
     }
     // All reusables
     {
@@ -329,7 +321,7 @@ describe('get-data applies corrections to translated variables', () => {
               name: '{% データ variables.myproduct.name %}',
             },
             phases: {
-              // Not corrupted — should pass through unchanged
+              // Not corrupted, so it should pass through unchanged
               preview: '{% ifversion ghes < 3.16 %}ベータ{% else %}パブリックプレビュー{% endif %}',
             },
           },

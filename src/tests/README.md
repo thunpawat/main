@@ -154,6 +154,7 @@ START_VITEST_SERVER=false vitest src/versions/tests
 ## Cross-links & Ownership
 
 ### Related subjects
+- [`SUITES.md`](./SUITES.md) - Catalog of CI test suites: what each covers, its prereqs, and admin-merge risk
 - [`src/fixtures`](../fixtures/README.md) - Fixture-based testing with minimal content
 - All subjects with `/tests/` directories - Test consumers
 - CI workflows in `.github/workflows/` - Automated test execution
@@ -224,7 +225,7 @@ npm run lint
 
 Tests should be co-located with their subject:
 - ✅ `src/search/tests/api-search.ts`
-- ✅ `src/versions/tests/middleware.ts`
+- ✅ `src/events/tests/middleware.ts`
 - ❌ `src/tests/search-tests.ts` (wrong - not in subject)
 
 Shared utilities belong in `src/tests/`:

@@ -47,11 +47,10 @@ const IndentedDataReference = {
 
     assert(parseInt(numSpaces) || numSpaces === '0', '"spaces=NUMBER" must include a number')
 
-    // Get the referenced value from the context
     const text: string | undefined = getDataByLanguage(
       dataReference,
       scope.environments.currentLanguage,
-    )
+    ) as string | undefined
     if (text === undefined) {
       if (scope.environments.currentLanguage === 'en') {
         const message = `Can't find the key 'indented_data_reference ${dataReference}' in the scope.`
@@ -63,7 +62,6 @@ const IndentedDataReference = {
       return
     }
 
-    // add spaces to each line
     const renderedReferenceWithIndent: string = text.replace(/^/gm, ' '.repeat(parseInt(numSpaces)))
 
     return this.liquid.parseAndRender(renderedReferenceWithIndent, scope.environments)

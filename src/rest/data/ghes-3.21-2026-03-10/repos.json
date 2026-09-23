@@ -42,13 +42,13 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "created",
             "enum": [
               "created",
               "updated",
               "pushed",
               "full_name"
-            ],
-            "default": "created"
+            ]
           }
         },
         {
@@ -8278,6 +8278,21 @@
         },
         {
           "type": "boolean",
+          "name": "has_pull_requests",
+          "description": "<p>Either <code>true</code> to allow pull requests for this repository or <code>false</code> to prevent pull requests.</p>",
+          "default": true
+        },
+        {
+          "type": "string",
+          "name": "pull_request_creation_policy",
+          "description": "<p>The policy that controls who can create pull requests for this repository: <code>all</code> or <code>collaborators_only</code>.</p>",
+          "enum": [
+            "all",
+            "collaborators_only"
+          ]
+        },
+        {
+          "type": "boolean",
           "name": "is_template",
           "description": "<p>Either <code>true</code> to make this repo available as a template repository or <code>false</code> to prevent it.</p>",
           "default": false
@@ -11964,11 +11979,11 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "desc",
             "enum": [
               "asc",
               "desc"
-            ],
-            "default": "desc"
+            ]
           }
         },
         {
@@ -14982,8 +14997,7 @@
           {
             "\"Administration\" repository permissions": "write"
           }
-        ],
-        "disabledForPatV2": true
+        ]
       }
     },
     {
@@ -18718,9 +18732,6 @@
             "enum": [
               "all",
               "public"
-            ],
-            "examples": [
-              "all"
             ]
           }
         }
@@ -19541,12 +19552,12 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "all",
             "enum": [
               "all",
               "public",
               "private"
-            ],
-            "default": "all"
+            ]
           }
         },
         {
@@ -19566,14 +19577,14 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "all",
             "enum": [
               "all",
               "owner",
               "public",
               "private",
               "member"
-            ],
-            "default": "all"
+            ]
           }
         },
         {
@@ -19583,13 +19594,13 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "full_name",
             "enum": [
               "created",
               "updated",
               "pushed",
               "full_name"
-            ],
-            "default": "full_name"
+            ]
           }
         },
         {
@@ -19629,8 +19640,7 @@
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           }
         },
         {
@@ -19639,8 +19649,7 @@
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string",
-            "format": "date-time"
+            "type": "string"
           }
         }
       ],
@@ -24139,12 +24148,12 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "owner",
             "enum": [
               "all",
               "owner",
               "member"
-            ],
-            "default": "owner"
+            ]
           }
         },
         {
@@ -24154,13 +24163,13 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "full_name",
             "enum": [
               "created",
               "updated",
               "pushed",
               "full_name"
-            ],
-            "default": "full_name"
+            ]
           }
         },
         {
@@ -25538,13 +25547,13 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "day",
             "enum": [
               "hour",
               "day",
               "week",
               "month"
-            ],
-            "default": "day"
+            ]
           }
         },
         {
@@ -25554,6 +25563,7 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "all",
             "enum": [
               "completed",
               "cancelled",
@@ -25563,8 +25573,7 @@
               "denied",
               "open",
               "all"
-            ],
-            "default": "all"
+            ]
           }
         },
         {
@@ -30171,7 +30180,10 @@
                   "value": {
                     "oneOf": [
                       {
-                        "type": "string"
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       },
                       {
                         "type": "array",
@@ -30372,13 +30384,13 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "newest",
             "enum": [
               "newest",
               "oldest",
               "stargazers",
               "watchers"
-            ],
-            "default": "newest"
+            ]
           }
         },
         {
@@ -34928,13 +34940,13 @@
           "required": false,
           "schema": {
             "type": "string",
+            "default": "day",
             "enum": [
               "hour",
               "day",
               "week",
               "month"
-            ],
-            "default": "day"
+            ]
           }
         },
         {
@@ -34951,13 +34963,13 @@
           "in": "query",
           "schema": {
             "type": "string",
+            "default": "all",
             "enum": [
               "pass",
               "fail",
               "bypass",
               "all"
-            ],
-            "default": "all"
+            ]
           }
         },
         {
@@ -35890,6 +35902,49 @@
                               "dismiss_stale_reviews_on_push": {
                                 "type": "boolean",
                                 "description": "New, reviewable commits pushed will dismiss previous pull request review approvals."
+                              },
+                              "dismissal_restriction": {
+                                "title": "DismissalRestriction",
+                                "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                "type": "object",
+                                "properties": {
+                                  "allowed_actors": {
+                                    "type": "array",
+                                    "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                    "items": {
+                                      "title": "Actor",
+                                      "description": "An actor allowed to dismiss pull request reviews",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer",
+                                          "description": "ID of the actor that can dismiss reviews."
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "description": "The type of the actor",
+                                          "enum": [
+                                            "User",
+                                            "Team",
+                                            "IntegrationInstallation",
+                                            "RepositoryRole"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "type"
+                                      ]
+                                    }
+                                  },
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether to restrict review dismissal to specific actors."
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ]
                               },
                               "require_code_owner_review": {
                                 "type": "boolean",
@@ -37023,10 +37078,7 @@
           "in": "query",
           "required": false,
           "schema": {
-            "type": "string",
-            "examples": [
-              "branch,tag,push"
-            ]
+            "type": "string"
           }
         }
       ],
@@ -37735,6 +37787,49 @@
                                 "dismiss_stale_reviews_on_push": {
                                   "type": "boolean",
                                   "description": "New, reviewable commits pushed will dismiss previous pull request review approvals."
+                                },
+                                "dismissal_restriction": {
+                                  "title": "DismissalRestriction",
+                                  "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                  "type": "object",
+                                  "properties": {
+                                    "allowed_actors": {
+                                      "type": "array",
+                                      "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                      "items": {
+                                        "title": "Actor",
+                                        "description": "An actor allowed to dismiss pull request reviews",
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "integer",
+                                            "description": "ID of the actor that can dismiss reviews."
+                                          },
+                                          "type": {
+                                            "type": "string",
+                                            "description": "The type of the actor",
+                                            "enum": [
+                                              "User",
+                                              "Team",
+                                              "IntegrationInstallation",
+                                              "RepositoryRole"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "type"
+                                        ]
+                                      }
+                                    },
+                                    "enabled": {
+                                      "type": "boolean",
+                                      "description": "Whether to restrict review dismissal to specific actors."
+                                    }
+                                  },
+                                  "required": [
+                                    "enabled"
+                                  ]
                                 },
                                 "require_code_owner_review": {
                                   "type": "boolean",
@@ -38787,6 +38882,44 @@
                       "name": "dismiss_stale_reviews_on_push",
                       "description": "<p>New, reviewable commits pushed will dismiss previous pull request review approvals.</p>",
                       "isRequired": true
+                    },
+                    {
+                      "type": "object",
+                      "name": "dismissal_restriction",
+                      "description": "<p>Specify people, teams, or apps allowed to dismiss pull request reviews.</p>",
+                      "childParamsGroups": [
+                        {
+                          "type": "array of objects",
+                          "name": "allowed_actors",
+                          "description": "<p>Specify people, teams, or apps allowed to dismiss pull request reviews.</p>",
+                          "childParamsGroups": [
+                            {
+                              "type": "integer",
+                              "name": "id",
+                              "description": "<p>ID of the actor that can dismiss reviews.</p>",
+                              "isRequired": true
+                            },
+                            {
+                              "type": "string",
+                              "name": "type",
+                              "description": "<p>The type of the actor</p>",
+                              "isRequired": true,
+                              "enum": [
+                                "User",
+                                "Team",
+                                "IntegrationInstallation",
+                                "RepositoryRole"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "boolean",
+                          "name": "enabled",
+                          "description": "<p>Whether to restrict review dismissal to specific actors.</p>",
+                          "isRequired": true
+                        }
+                      ]
                     },
                     {
                       "type": "boolean",
@@ -40198,6 +40331,49 @@
                               "dismiss_stale_reviews_on_push": {
                                 "type": "boolean",
                                 "description": "New, reviewable commits pushed will dismiss previous pull request review approvals."
+                              },
+                              "dismissal_restriction": {
+                                "title": "DismissalRestriction",
+                                "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                "type": "object",
+                                "properties": {
+                                  "allowed_actors": {
+                                    "type": "array",
+                                    "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                    "items": {
+                                      "title": "Actor",
+                                      "description": "An actor allowed to dismiss pull request reviews",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer",
+                                          "description": "ID of the actor that can dismiss reviews."
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "description": "The type of the actor",
+                                          "enum": [
+                                            "User",
+                                            "Team",
+                                            "IntegrationInstallation",
+                                            "RepositoryRole"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "type"
+                                      ]
+                                    }
+                                  },
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether to restrict review dismissal to specific actors."
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ]
                               },
                               "require_code_owner_review": {
                                 "type": "boolean",
@@ -41663,6 +41839,49 @@
                                 "type": "boolean",
                                 "description": "New, reviewable commits pushed will dismiss previous pull request review approvals."
                               },
+                              "dismissal_restriction": {
+                                "title": "DismissalRestriction",
+                                "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                "type": "object",
+                                "properties": {
+                                  "allowed_actors": {
+                                    "type": "array",
+                                    "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                    "items": {
+                                      "title": "Actor",
+                                      "description": "An actor allowed to dismiss pull request reviews",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer",
+                                          "description": "ID of the actor that can dismiss reviews."
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "description": "The type of the actor",
+                                          "enum": [
+                                            "User",
+                                            "Team",
+                                            "IntegrationInstallation",
+                                            "RepositoryRole"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "type"
+                                      ]
+                                    }
+                                  },
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether to restrict review dismissal to specific actors."
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ]
+                              },
                               "require_code_owner_review": {
                                 "type": "boolean",
                                 "description": "Require an approving review in pull requests that modify files that have a designated code owner."
@@ -42719,6 +42938,44 @@
                       "name": "dismiss_stale_reviews_on_push",
                       "description": "<p>New, reviewable commits pushed will dismiss previous pull request review approvals.</p>",
                       "isRequired": true
+                    },
+                    {
+                      "type": "object",
+                      "name": "dismissal_restriction",
+                      "description": "<p>Specify people, teams, or apps allowed to dismiss pull request reviews.</p>",
+                      "childParamsGroups": [
+                        {
+                          "type": "array of objects",
+                          "name": "allowed_actors",
+                          "description": "<p>Specify people, teams, or apps allowed to dismiss pull request reviews.</p>",
+                          "childParamsGroups": [
+                            {
+                              "type": "integer",
+                              "name": "id",
+                              "description": "<p>ID of the actor that can dismiss reviews.</p>",
+                              "isRequired": true
+                            },
+                            {
+                              "type": "string",
+                              "name": "type",
+                              "description": "<p>The type of the actor</p>",
+                              "isRequired": true,
+                              "enum": [
+                                "User",
+                                "Team",
+                                "IntegrationInstallation",
+                                "RepositoryRole"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "boolean",
+                          "name": "enabled",
+                          "description": "<p>Whether to restrict review dismissal to specific actors.</p>",
+                          "isRequired": true
+                        }
+                      ]
                     },
                     {
                       "type": "boolean",
@@ -44131,6 +44388,49 @@
                               "dismiss_stale_reviews_on_push": {
                                 "type": "boolean",
                                 "description": "New, reviewable commits pushed will dismiss previous pull request review approvals."
+                              },
+                              "dismissal_restriction": {
+                                "title": "DismissalRestriction",
+                                "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                "type": "object",
+                                "properties": {
+                                  "allowed_actors": {
+                                    "type": "array",
+                                    "description": "Specify people, teams, or apps allowed to dismiss pull request reviews.",
+                                    "items": {
+                                      "title": "Actor",
+                                      "description": "An actor allowed to dismiss pull request reviews",
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer",
+                                          "description": "ID of the actor that can dismiss reviews."
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "description": "The type of the actor",
+                                          "enum": [
+                                            "User",
+                                            "Team",
+                                            "IntegrationInstallation",
+                                            "RepositoryRole"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "type"
+                                      ]
+                                    }
+                                  },
+                                  "enabled": {
+                                    "type": "boolean",
+                                    "description": "Whether to restrict review dismissal to specific actors."
+                                  }
+                                },
+                                "required": [
+                                  "enabled"
+                                ]
                               },
                               "require_code_owner_review": {
                                 "type": "boolean",

@@ -8,9 +8,7 @@ import { loadTemplate } from '@/article-api/lib/load-template'
 import { getSecretScanningData } from '@/secret-scanning/lib/get-secret-scanning-data'
 
 /**
- * Transformer for Secret Scanning pages.
- * Loads pattern data and converts secret scanning documentation into markdown format.
- * Used by the Article API to render Secret Scanning documentation dynamically.
+ * Loads secret scanning pattern data and converts it into markdown.
  */
 export class SecretScanningTransformer implements PageTransformer {
   templateName = 'secret-scanning-page.template.md'
@@ -38,13 +36,22 @@ export class SecretScanningTransformer implements PageTransformer {
       try {
         const data = await getSecretScanningData(filepath)
 
-        // Process Liquid in values
         for (const entry of data) {
-          // Only process Liquid for the hasValidityCheck field, as in the middleware
+          // Process Liquid for the hasValidityCheck field, as in the middleware
           if (typeof entry.hasValidityCheck === 'string' && entry.hasValidityCheck.includes('{%')) {
             // Render Liquid and parse as YAML to get correct boolean type
             entry.hasValidityCheck = load(
               await liquid.parseAndRender(entry.hasValidityCheck, context),
+            ) as boolean
+          }
+
+          // Process Liquid for the hasExtendedMetadata field, as in the middleware
+          if (
+            typeof entry.hasExtendedMetadata === 'string' &&
+            entry.hasExtendedMetadata.includes('{%')
+          ) {
+            entry.hasExtendedMetadata = load(
+              await liquid.parseAndRender(entry.hasExtendedMetadata, context),
             ) as boolean
           }
 
@@ -94,13 +101,10 @@ export class SecretScanningTransformer implements PageTransformer {
       content += table
     }
 
-    // Strip HTML comments from the rendered content
     content = content.replace(/<!--.*?-->/gs, '')
 
-    // Replace HTML icon spans with plain text equivalents
     content = content.replace(/<span[^>]*aria-label="Supported"[^>]*>[^<]*<\/span>/g, '✓')
     content = content.replace(/<span[^>]*aria-label="Unsupported"[^>]*>[^<]*<\/span>/g, '✗')
-    // Convert <br/> tags to newlines and <a href="...">text</a> to markdown links
     content = content.replace(/<br\s*\/?>/gi, '\n')
     content = content.replace(/<a\s+href="([^"]*)"[^>]*>([^<]*)<\/a>/gi, '[$2]($1)')
     // Strip any remaining HTML tags. Loop until stable to handle nested or
@@ -115,12 +119,11 @@ export class SecretScanningTransformer implements PageTransformer {
       iterations++
     }
 
-    // Normalize whitespace after stripping comments
     content = content.replace(/\n{3,}/g, '\n\n').trim()
 
     const intro = page.intro ? await page.renderProp('intro', context, { textOnly: true }) : ''
 
-    // Render the template with Liquid only — page.render() already ran
+    // Render the template with Liquid only. page.render() already ran
     // rewriteLocalLinks on all markdown links, and the regex cleanup above
     // only creates fragment links (e.g. #token-versions) which don't need
     // link rewriting. So we skip the expensive remark re-parse.

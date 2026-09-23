@@ -17,6 +17,7 @@ export type ArticleContextT = {
   intro: string
   effectiveDate: string
   renderedPage: string | JSX.Element[]
+  renderedPageHast?: import('hast').Root | null
   miniTocItems: Array<MiniTocItem>
   permissions?: string
   includesPlatformSpecificContent: boolean
@@ -54,12 +55,13 @@ const PagePathToVaFlowMapping: Record<string, string> = {
     'pages_ssl_check',
 }
 
-// Request type for context extraction — uses Record<string, unknown> for the page
+// Request type for context extraction. Uses Record<string, unknown> for the page
 // because the Page type doesn't include all runtime-computed properties.
 interface ContextRequest {
   context: {
     page: Record<string, unknown> & { fullPath: string; title: string; intro: string }
     renderedPage?: string
+    renderedPageHast?: import('hast').Root
     miniTocItems?: MiniTocItem[]
     currentJourneyTrack?: JourneyContext
     currentLayoutName?: string
@@ -97,6 +99,7 @@ export const getArticleContextFromRequest = (req: ContextRequest): ArticleContex
     intro: page.intro,
     effectiveDate,
     renderedPage: (req.context.renderedPage as string) || '',
+    renderedPageHast: req.context.renderedPageHast ?? null,
     miniTocItems: req.context.miniTocItems || [],
     permissions: (page.permissions as string) || '',
     includesPlatformSpecificContent: (page.includesPlatformSpecificContent as boolean) || false,

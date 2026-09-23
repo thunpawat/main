@@ -128,12 +128,30 @@
       },
       {
         "category": "billing",
+        "slug": "get-billing-ai-credit-usage-report-for-an-organization",
+        "subcategory": "usage",
+        "verb": "get",
+        "requestPath": "/organizations/{org}/settings/billing/ai_credit/usage",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "billing",
         "slug": "get-all-budgets-for-an-organization",
         "subcategory": "budgets",
         "verb": "get",
         "requestPath": "/organizations/{org}/settings/billing/budgets",
         "additional-permissions": false,
         "access": "read"
+      },
+      {
+        "category": "billing",
+        "slug": "create-a-budget-for-an-organization",
+        "subcategory": "budgets",
+        "verb": "post",
+        "requestPath": "/organizations/{org}/settings/billing/budgets",
+        "additional-permissions": false,
+        "access": "write"
       },
       {
         "category": "billing",
@@ -559,6 +577,69 @@
         "access": "write"
       },
       {
+        "category": "actions",
+        "slug": "list-organization-actions-policies",
+        "subcategory": "policies",
+        "verb": "get",
+        "requestPath": "/orgs/{org}/actions/policies",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
+        "slug": "create-an-organization-actions-policy",
+        "subcategory": "policies",
+        "verb": "post",
+        "requestPath": "/orgs/{org}/actions/policies",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
+        "slug": "get-an-organization-actions-policy",
+        "subcategory": "policies",
+        "verb": "get",
+        "requestPath": "/orgs/{org}/actions/policies/{policy_id}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
+        "slug": "update-an-organization-actions-policy",
+        "subcategory": "policies",
+        "verb": "put",
+        "requestPath": "/orgs/{org}/actions/policies/{policy_id}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
+        "slug": "delete-an-organization-actions-policy",
+        "subcategory": "policies",
+        "verb": "delete",
+        "requestPath": "/orgs/{org}/actions/policies/{policy_id}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "code-scanning",
+        "slug": "get-the-ai-scan-setting-for-an-organization",
+        "subcategory": "code-scanning",
+        "verb": "get",
+        "requestPath": "/orgs/{org}/code-scanning/ai-scan",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "code-scanning",
+        "slug": "update-the-ai-scan-setting-for-an-organization",
+        "subcategory": "code-scanning",
+        "verb": "patch",
+        "requestPath": "/orgs/{org}/code-scanning/ai-scan",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
         "category": "code-security",
         "slug": "get-code-security-configurations-for-an-organization",
         "subcategory": "configurations",
@@ -703,15 +784,6 @@
         "access": "write"
       },
       {
-        "category": "copilot",
-        "slug": "get-copilot-metrics-for-an-organization",
-        "subcategory": "copilot-metrics",
-        "verb": "get",
-        "requestPath": "/orgs/{org}/copilot/metrics",
-        "additional-permissions": true,
-        "access": "read"
-      },
-      {
         "category": "dependabot",
         "slug": "lists-the-repositories-dependabot-can-access-in-an-organization",
         "subcategory": "repository-access",
@@ -771,6 +843,24 @@
         "subcategory": "orgs",
         "verb": "delete",
         "requestPath": "/orgs/{org}/interaction-limits",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "interactions",
+        "slug": "get-pull-request-creation-cap-for-an-org",
+        "subcategory": "orgs",
+        "verb": "get",
+        "requestPath": "/orgs/{org}/interaction-limits/pulls/creation-cap",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "interactions",
+        "slug": "update-pull-request-creation-cap-for-an-org",
+        "subcategory": "orgs",
+        "verb": "patch",
+        "requestPath": "/orgs/{org}/interaction-limits/pulls/creation-cap",
         "additional-permissions": false,
         "access": "write"
       },
@@ -861,6 +951,42 @@
         "subcategory": "rules",
         "verb": "get",
         "requestPath": "/orgs/{org}/rulesets/{ruleset_id}/history/{version_id}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "secret-scanning",
+        "slug": "list-organization-custom-patterns",
+        "subcategory": "custom-patterns",
+        "verb": "get",
+        "requestPath": "/orgs/{org}/secret-scanning/custom-patterns",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "secret-scanning",
+        "slug": "bulk-create-organization-custom-patterns",
+        "subcategory": "custom-patterns",
+        "verb": "post",
+        "requestPath": "/orgs/{org}/secret-scanning/custom-patterns",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "secret-scanning",
+        "slug": "bulk-delete-organization-custom-patterns",
+        "subcategory": "custom-patterns",
+        "verb": "delete",
+        "requestPath": "/orgs/{org}/secret-scanning/custom-patterns",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "secret-scanning",
+        "slug": "update-an-organization-custom-pattern",
+        "subcategory": "custom-patterns",
+        "verb": "patch",
+        "requestPath": "/orgs/{org}/secret-scanning/custom-patterns/{pattern_id}",
         "additional-permissions": false,
         "access": "write"
       },
@@ -962,15 +1088,6 @@
         "requestPath": "/orgs/{org}/settings/immutable-releases/repositories/{repository_id}",
         "additional-permissions": true,
         "access": "write"
-      },
-      {
-        "category": "copilot",
-        "slug": "get-copilot-metrics-for-a-team",
-        "subcategory": "copilot-metrics",
-        "verb": "get",
-        "requestPath": "/orgs/{org}/team/{team_slug}/copilot/metrics",
-        "additional-permissions": true,
-        "access": "read"
       },
       {
         "category": "orgs",
@@ -1634,28 +1751,10 @@
       },
       {
         "category": "copilot",
-        "slug": "get-copilot-metrics-for-an-organization",
-        "subcategory": "copilot-metrics",
-        "verb": "get",
-        "requestPath": "/orgs/{org}/copilot/metrics",
-        "additional-permissions": true,
-        "access": "read"
-      },
-      {
-        "category": "copilot",
         "slug": "get-copilot-seat-assignment-details-for-a-user",
         "subcategory": "copilot-user-management",
         "verb": "get",
         "requestPath": "/orgs/{org}/members/{username}/copilot",
-        "additional-permissions": true,
-        "access": "read"
-      },
-      {
-        "category": "copilot",
-        "slug": "get-copilot-metrics-for-a-team",
-        "subcategory": "copilot-metrics",
-        "verb": "get",
-        "requestPath": "/orgs/{org}/team/{team_slug}/copilot/metrics",
         "additional-permissions": true,
         "access": "read"
       }
@@ -2426,6 +2525,15 @@
       },
       {
         "category": "copilot",
+        "slug": "get-copilot-organization-repository-report-for-a-specific-day",
+        "subcategory": "copilot-usage-metrics",
+        "verb": "get",
+        "requestPath": "/orgs/{org}/copilot/metrics/reports/repos-1-day",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "copilot",
         "slug": "get-copilot-organization-user-teams-report-for-a-specific-day",
         "subcategory": "copilot-usage-metrics",
         "verb": "get",
@@ -3108,6 +3216,15 @@
         "subcategory": "self-hosted-runners",
         "verb": "get",
         "requestPath": "/orgs/{org}/actions/runners",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "actions",
+        "slug": "get-runner-version-end-of-life-schedule-for-an-organization",
+        "subcategory": "self-hosted-runners",
+        "verb": "get",
+        "requestPath": "/orgs/{org}/actions/runners/deprecations/{version}",
         "additional-permissions": false,
         "access": "read"
       },
@@ -4046,10 +4163,64 @@
       },
       {
         "category": "actions",
+        "slug": "list-repository-actions-policies",
+        "subcategory": "policies",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/actions/policies",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
+        "slug": "create-a-repository-actions-policy",
+        "subcategory": "policies",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/actions/policies",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
+        "slug": "get-a-repository-actions-policy",
+        "subcategory": "policies",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/actions/policies/{policy_id}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
+        "slug": "update-a-repository-actions-policy",
+        "subcategory": "policies",
+        "verb": "put",
+        "requestPath": "/repos/{owner}/{repo}/actions/policies/{policy_id}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
+        "slug": "delete-a-repository-actions-policy",
+        "subcategory": "policies",
+        "verb": "delete",
+        "requestPath": "/repos/{owner}/{repo}/actions/policies/{policy_id}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "actions",
         "slug": "list-self-hosted-runners-for-a-repository",
         "subcategory": "self-hosted-runners",
         "verb": "get",
         "requestPath": "/repos/{owner}/{repo}/actions/runners",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "actions",
+        "slug": "get-runner-version-end-of-life-schedule-for-a-repository",
+        "subcategory": "self-hosted-runners",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/actions/runners/deprecations/{version}",
         "additional-permissions": false,
         "access": "read"
       },
@@ -4513,6 +4684,33 @@
         "access": "write"
       },
       {
+        "category": "code-quality",
+        "slug": "get-a-code-quality-setup-configuration",
+        "subcategory": "code-quality",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/code-quality/setup",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "code-quality",
+        "slug": "update-a-code-quality-setup-configuration",
+        "subcategory": "code-quality",
+        "verb": "patch",
+        "requestPath": "/repos/{owner}/{repo}/code-quality/setup",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "code-scanning",
+        "slug": "update-ai-scan-enablement-for-a-repository",
+        "subcategory": "code-scanning",
+        "verb": "patch",
+        "requestPath": "/repos/{owner}/{repo}/code-scanning/ai-scan",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
         "category": "code-scanning",
         "slug": "get-a-code-scanning-default-setup-configuration",
         "subcategory": "code-scanning",
@@ -4693,6 +4891,51 @@
         "access": "write"
       },
       {
+        "category": "interactions",
+        "slug": "get-pull-request-creation-cap-bypass-list-for-a-repository",
+        "subcategory": "repos",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/interaction-limits/pulls/bypass-list",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "interactions",
+        "slug": "add-users-to-the-pull-request-creation-cap-bypass-list-for-a-repository",
+        "subcategory": "repos",
+        "verb": "put",
+        "requestPath": "/repos/{owner}/{repo}/interaction-limits/pulls/bypass-list",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "interactions",
+        "slug": "remove-users-from-the-pull-request-creation-cap-bypass-list-for-a-repository",
+        "subcategory": "repos",
+        "verb": "delete",
+        "requestPath": "/repos/{owner}/{repo}/interaction-limits/pulls/bypass-list",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "interactions",
+        "slug": "get-pull-request-creation-cap-for-a-repository",
+        "subcategory": "repos",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/interaction-limits/pulls/creation-cap",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "interactions",
+        "slug": "update-pull-request-creation-cap-for-a-repository",
+        "subcategory": "repos",
+        "verb": "patch",
+        "requestPath": "/repos/{owner}/{repo}/interaction-limits/pulls/creation-cap",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
         "category": "collaborators",
         "slug": "list-repository-invitations",
         "subcategory": "invitations",
@@ -4869,6 +5112,42 @@
         "subcategory": "rules",
         "verb": "get",
         "requestPath": "/repos/{owner}/{repo}/rulesets/{ruleset_id}/history/{version_id}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "secret-scanning",
+        "slug": "list-repository-custom-patterns",
+        "subcategory": "custom-patterns",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/secret-scanning/custom-patterns",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "secret-scanning",
+        "slug": "bulk-create-repository-custom-patterns",
+        "subcategory": "custom-patterns",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/secret-scanning/custom-patterns",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "secret-scanning",
+        "slug": "bulk-delete-repository-custom-patterns",
+        "subcategory": "custom-patterns",
+        "verb": "delete",
+        "requestPath": "/repos/{owner}/{repo}/secret-scanning/custom-patterns",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "secret-scanning",
+        "slug": "update-a-repository-custom-pattern",
+        "subcategory": "custom-patterns",
+        "verb": "patch",
+        "requestPath": "/repos/{owner}/{repo}/secret-scanning/custom-patterns/{pattern_id}",
         "additional-permissions": false,
         "access": "write"
       },
@@ -5148,7 +5427,7 @@
         "subcategory": "artifact-metadata",
         "verb": "post",
         "requestPath": "/orgs/{org}/artifacts/metadata/deployment-record",
-        "additional-permissions": true,
+        "additional-permissions": false,
         "access": "write"
       },
       {
@@ -5157,8 +5436,26 @@
         "subcategory": "artifact-metadata",
         "verb": "post",
         "requestPath": "/orgs/{org}/artifacts/metadata/deployment-record/cluster/{cluster}",
-        "additional-permissions": true,
+        "additional-permissions": false,
         "access": "write"
+      },
+      {
+        "category": "orgs",
+        "slug": "create-a-cluster-deployment-records-job",
+        "subcategory": "artifact-metadata",
+        "verb": "post",
+        "requestPath": "/orgs/{org}/artifacts/metadata/deployment-record/cluster/{cluster}/jobs",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "orgs",
+        "slug": "get-cluster-deployment-records-job-status",
+        "subcategory": "artifact-metadata",
+        "verb": "get",
+        "requestPath": "/orgs/{org}/artifacts/metadata/deployment-record/cluster/{cluster}/jobs/{job_id}",
+        "additional-permissions": false,
+        "access": "read"
       },
       {
         "category": "orgs",
@@ -5166,7 +5463,7 @@
         "subcategory": "artifact-metadata",
         "verb": "post",
         "requestPath": "/orgs/{org}/artifacts/metadata/storage-record",
-        "additional-permissions": true,
+        "additional-permissions": false,
         "access": "write"
       },
       {
@@ -5175,7 +5472,7 @@
         "subcategory": "artifact-metadata",
         "verb": "get",
         "requestPath": "/orgs/{org}/artifacts/{subject_digest}/metadata/deployment-records",
-        "additional-permissions": true,
+        "additional-permissions": false,
         "access": "read"
       },
       {
@@ -5184,7 +5481,7 @@
         "subcategory": "artifact-metadata",
         "verb": "get",
         "requestPath": "/orgs/{org}/artifacts/{subject_digest}/metadata/storage-records",
-        "additional-permissions": true,
+        "additional-permissions": false,
         "access": "read"
       }
     ]
@@ -5276,6 +5573,30 @@
       }
     ]
   },
+  "code_quality": {
+    "title": "Code quality",
+    "displayTitle": "Repository permissions for \"Code quality\"",
+    "permissions": [
+      {
+        "category": "code-quality",
+        "slug": "list-code-quality-findings-for-a-repository",
+        "subcategory": "code-quality",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/code-quality/findings",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "code-quality",
+        "slug": "get-a-code-quality-finding",
+        "subcategory": "code-quality",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/code-quality/findings/{finding_number}",
+        "additional-permissions": false,
+        "access": "read"
+      }
+    ]
+  },
   "security_events": {
     "title": "Code scanning alerts",
     "displayTitle": "Repository permissions for \"Code scanning alerts\"",
@@ -5286,6 +5607,15 @@
         "subcategory": "code-scanning",
         "verb": "get",
         "requestPath": "/orgs/{org}/code-scanning/alerts",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "code-scanning",
+        "slug": "get-ai-scan-enablement-for-a-repository",
+        "subcategory": "code-scanning",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/code-scanning/ai-scan",
         "additional-permissions": false,
         "access": "read"
       },
@@ -5701,51 +6031,6 @@
         "verb": "post",
         "requestPath": "/markdown",
         "additional-permissions": false,
-        "access": "read"
-      },
-      {
-        "category": "orgs",
-        "slug": "create-an-artifact-deployment-record",
-        "subcategory": "artifact-metadata",
-        "verb": "post",
-        "requestPath": "/orgs/{org}/artifacts/metadata/deployment-record",
-        "additional-permissions": true,
-        "access": "write"
-      },
-      {
-        "category": "orgs",
-        "slug": "set-cluster-deployment-records",
-        "subcategory": "artifact-metadata",
-        "verb": "post",
-        "requestPath": "/orgs/{org}/artifacts/metadata/deployment-record/cluster/{cluster}",
-        "additional-permissions": true,
-        "access": "write"
-      },
-      {
-        "category": "orgs",
-        "slug": "create-artifact-metadata-storage-record",
-        "subcategory": "artifact-metadata",
-        "verb": "post",
-        "requestPath": "/orgs/{org}/artifacts/metadata/storage-record",
-        "additional-permissions": true,
-        "access": "write"
-      },
-      {
-        "category": "orgs",
-        "slug": "list-artifact-deployment-records",
-        "subcategory": "artifact-metadata",
-        "verb": "get",
-        "requestPath": "/orgs/{org}/artifacts/{subject_digest}/metadata/deployment-records",
-        "additional-permissions": true,
-        "access": "read"
-      },
-      {
-        "category": "orgs",
-        "slug": "list-artifact-storage-records",
-        "subcategory": "artifact-metadata",
-        "verb": "get",
-        "requestPath": "/orgs/{org}/artifacts/{subject_digest}/metadata/storage-records",
-        "additional-permissions": true,
         "access": "read"
       },
       {
@@ -6298,6 +6583,24 @@
         "access": "write"
       },
       {
+        "category": "pulls",
+        "slug": "merge-a-pull-request-asynchronously",
+        "subcategory": "pulls",
+        "verb": "put",
+        "requestPath": "/repos/{owner}/{repo}/pulls/{pull_number}/merge-async",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "pulls",
+        "slug": "get-the-result-of-an-asynchronous-merge",
+        "subcategory": "pulls",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/pulls/{pull_number}/merge-async/{uuid}",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
         "category": "repos",
         "slug": "get-a-repository-readme",
         "subcategory": "contents",
@@ -6448,6 +6751,24 @@
         "verb": "post",
         "requestPath": "/repos/{owner}/{repo}/secret-scanning/push-protection-bypasses",
         "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "activity",
+        "slug": "list-stargazers",
+        "subcategory": "starring",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/stargazers",
+        "additional-permissions": true,
+        "access": "write"
+      },
+      {
+        "category": "activity",
+        "slug": "list-watchers",
+        "subcategory": "watching",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/subscribers",
+        "additional-permissions": true,
         "access": "write"
       },
       {
@@ -7196,6 +7517,33 @@
       },
       {
         "category": "issues",
+        "slug": "list-issue-suggestions",
+        "subcategory": "issues",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/issues/{issue_number}/suggestions",
+        "additional-permissions": true,
+        "access": "read"
+      },
+      {
+        "category": "issues",
+        "slug": "approve-an-issue-suggestion",
+        "subcategory": "issues",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/issues/{issue_number}/suggestions/{suggestion_id}/approve",
+        "additional-permissions": true,
+        "access": "write"
+      },
+      {
+        "category": "issues",
+        "slug": "dismiss-an-issue-suggestion",
+        "subcategory": "issues",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/issues/{issue_number}/suggestions/{suggestion_id}/dismiss",
+        "additional-permissions": true,
+        "access": "write"
+      },
+      {
+        "category": "issues",
         "slug": "list-timeline-events-for-an-issue",
         "subcategory": "timeline",
         "verb": "get",
@@ -7418,6 +7766,24 @@
       },
       {
         "category": "repos",
+        "slug": "get-the-hash-algorithm-for-a-repository",
+        "subcategory": "repos",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/hash-algorithm",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "repos",
+        "slug": "list-issue-types-for-a-repository",
+        "subcategory": "issue-types",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/issue-types",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "repos",
         "slug": "list-repository-languages",
         "subcategory": "repos",
         "verb": "get",
@@ -7481,10 +7847,19 @@
       },
       {
         "category": "activity",
-        "slug": "list-stargazers",
+        "slug": "get-stargazer-count",
         "subcategory": "starring",
         "verb": "get",
-        "requestPath": "/repos/{owner}/{repo}/stargazers",
+        "requestPath": "/repos/{owner}/{repo}/stargazers/count",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "activity",
+        "slug": "get-repository-star-history",
+        "subcategory": "starring",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/stargazers/history",
         "additional-permissions": false,
         "access": "read"
       },
@@ -7530,15 +7905,6 @@
         "subcategory": "statistics",
         "verb": "get",
         "requestPath": "/repos/{owner}/{repo}/stats/punch_card",
-        "additional-permissions": false,
-        "access": "read"
-      },
-      {
-        "category": "activity",
-        "slug": "list-watchers",
-        "subcategory": "watching",
-        "verb": "get",
-        "requestPath": "/repos/{owner}/{repo}/subscribers",
         "additional-permissions": false,
         "access": "read"
       },
@@ -7943,6 +8309,33 @@
       },
       {
         "category": "issues",
+        "slug": "list-issue-suggestions",
+        "subcategory": "issues",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/issues/{issue_number}/suggestions",
+        "additional-permissions": true,
+        "access": "read"
+      },
+      {
+        "category": "issues",
+        "slug": "approve-an-issue-suggestion",
+        "subcategory": "issues",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/issues/{issue_number}/suggestions/{suggestion_id}/approve",
+        "additional-permissions": true,
+        "access": "write"
+      },
+      {
+        "category": "issues",
+        "slug": "dismiss-an-issue-suggestion",
+        "subcategory": "issues",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/issues/{issue_number}/suggestions/{suggestion_id}/dismiss",
+        "additional-permissions": true,
+        "access": "write"
+      },
+      {
+        "category": "issues",
         "slug": "list-timeline-events-for-an-issue",
         "subcategory": "timeline",
         "verb": "get",
@@ -8307,6 +8700,51 @@
         "subcategory": "pulls",
         "verb": "put",
         "requestPath": "/repos/{owner}/{repo}/pulls/{pull_number}/update-branch",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "pulls",
+        "slug": "list-pull-request-stacks",
+        "subcategory": "stacks",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/stacks",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "pulls",
+        "slug": "create-a-pull-request-stack",
+        "subcategory": "stacks",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/stacks",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "pulls",
+        "slug": "get-a-pull-request-stack",
+        "subcategory": "stacks",
+        "verb": "get",
+        "requestPath": "/repos/{owner}/{repo}/stacks/{stack_number}",
+        "additional-permissions": false,
+        "access": "read"
+      },
+      {
+        "category": "pulls",
+        "slug": "add-pull-requests-to-a-pull-request-stack",
+        "subcategory": "stacks",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/stacks/{stack_number}/add",
+        "additional-permissions": false,
+        "access": "write"
+      },
+      {
+        "category": "pulls",
+        "slug": "remove-pull-requests-from-a-pull-request-stack",
+        "subcategory": "stacks",
+        "verb": "post",
+        "requestPath": "/repos/{owner}/{repo}/stacks/{stack_number}/unstack",
         "additional-permissions": false,
         "access": "write"
       }
@@ -9192,6 +9630,15 @@
     "title": "Plan",
     "displayTitle": "User permissions for \"Plan\"",
     "permissions": [
+      {
+        "category": "billing",
+        "slug": "get-billing-ai-credit-usage-report-for-a-user",
+        "subcategory": "usage",
+        "verb": "get",
+        "requestPath": "/users/{username}/settings/billing/ai_credit/usage",
+        "additional-permissions": false,
+        "access": "read"
+      },
       {
         "category": "billing",
         "slug": "get-billing-premium-request-usage-report-for-a-user",

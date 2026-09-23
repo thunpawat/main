@@ -4,6 +4,7 @@ import type { Failbot } from '@github/failbot'
 import type enterpriseServerReleases from '@/versions/lib/enterprise-server-releases.d'
 import type { ValidOcticon } from '@/landings/types'
 import type { Language, Languages } from '@/languages/lib/languages-server'
+import type { JourneyContext } from '@/journeys/lib/journey-path-resolver'
 import type { MiniTocItem } from '@/frame/lib/get-mini-toc-items'
 import type { UIStrings } from '@/frame/components/context/MainContext'
 
@@ -68,6 +69,7 @@ export type PageFrontmatter = {
   childGroups?: ChildGroup[]
   sidebarLink?: SidebarLink
   spotlight?: SpotlightItem[]
+  filters?: Array<'category' | 'surface' | 'complexity'>
 }
 
 type FeaturedLinks = {
@@ -118,6 +120,7 @@ export type Context = {
   // Allows dynamic properties like features & version shortnames as keys
   [key: string]: unknown
   currentCategory?: string
+  currentJourneyTrack?: JourneyContext | null
   error?: Error
   siteTree?: SiteTree
   pages?: Record<string, Page>
@@ -175,6 +178,7 @@ export type Context = {
   productGroups?: ProductGroup[]
   featuredLinks?: FeaturedLinksExpanded
   renderedPage?: string
+  renderedPageHast?: import('hast').Root
   miniTocItems?: MiniTocItem[]
   markdownRequested?: boolean
   markdownViaUrl?: boolean
@@ -222,6 +226,7 @@ export type ToC = {
   octicon: ValidOcticon | null
   category: string[] | null
   complexity: string[] | null
+  surface: string[] | null
   industry: string[] | null
   childTocItems: ToC[]
 }
@@ -276,7 +281,7 @@ export type SecretScanningData = {
   isPrivateWithGhas: boolean
   hasPushProtection: boolean
   hasValidityCheck: boolean | string
-  hasExtendedMetadata?: boolean
+  hasExtendedMetadata?: boolean | string
   base64Supported: boolean
   isduplicate: boolean
 }
@@ -333,11 +338,18 @@ export type Page = {
   octicon?: string
   category?: string[]
   complexity?: string[]
+  surface?: string[]
   industry?: string[]
   sidebarLink?: SidebarLink
   contentType?: string
   docsTeamMetrics?: string[]
   children?: string[]
+  introPlainText?: string
+  noEarlyAccessBanner?: boolean
+  communityRedirect?: {
+    name: string
+    href: string
+  }
 }
 
 export type SidebarLink = {

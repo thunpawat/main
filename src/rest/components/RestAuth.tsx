@@ -4,6 +4,7 @@ import { useTranslation } from '@/languages/components/useTranslation'
 import { DEFAULT_VERSION, useVersion } from '@/versions/components/useVersion'
 import { Link } from '@/frame/components/Link'
 import { ProgAccessT } from './types'
+import { RenderedHTML } from '@/frame/components/ui/RenderedHTML/RenderedHTML'
 
 // Documentation paths may be moved around by content team in the future
 const USER_TOKEN_PATH =
@@ -28,8 +29,7 @@ export function RestAuth({ progAccess, slug, operationTitle }: Props) {
   if (currentVersion === 'enterprise-server@3.9' || currentVersion === 'enterprise-server@3.8')
     return null
 
-  // There are some operations that have no progAccess access defined
-  // For those operations, we shouldn't display this component
+  // Some operations define no progAccess at all.
   if (!progAccess) return null
   const {
     userToServerRest,
@@ -69,7 +69,7 @@ export function RestAuth({ progAccess, slug, operationTitle }: Props) {
 function NoFineGrainedAccess({ basicAuth }: { basicAuth: boolean }) {
   const { t } = useTranslation('rest_reference')
 
-  if (basicAuth) return <p dangerouslySetInnerHTML={{ __html: t('basic_auth') }}></p>
+  if (basicAuth) return <RenderedHTML as="p" html={t('basic_auth')} />
   return <p>{t('no_fine_grained_access')}</p>
 }
 
@@ -111,8 +111,6 @@ function FineGrainedAccess({ progAccess }: FineGrainedProps) {
     basePath += `/${currentVersion}`
   }
 
-  // Pluralize the message if needed or customize it
-  // when no permissions are defined
   const numPermissionSets = progAccess.permissions.length
   const permissionMsg =
     numPermissionSets === 0

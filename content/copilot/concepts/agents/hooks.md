@@ -62,7 +62,7 @@ You configure hooks using a special JSON format. The JSON must contain a `versio
         "env": { "KEY": "value" },
         "timeoutSec": 30
       }
-    ],
+    ]
   }
 }
 ```
@@ -164,5 +164,5 @@ To ensure security is maintained when using hooks, keep the following considerat
 ## Next steps
 
 To start creating hooks, see:
-* [AUTOTITLE](/copilot/how-tos/use-copilot-agents/cloud-agent/use-hooks) for {% data variables.copilot.copilot_cloud_agent %}
+* [AUTOTITLE](/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/use-hooks) for {% data variables.copilot.copilot_cloud_agent %}
 * [AUTOTITLE](/copilot/how-tos/copilot-cli/customize-copilot/use-hooks) for {% data variables.copilot.copilot_cli %}
