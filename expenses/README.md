@@ -1,9 +1,10 @@
 # Expense tracker
 
 `index.html` is a standalone, self-contained personal expense tracker. Like
-`profile/`, it has no build dependency on the rest of this repository (a fork
+`docs/`, it has no build dependency on the rest of this repository (a fork
 of [github/docs](https://github.com/github/docs)) — open the file directly in
-a browser, or serve `expenses/` as a static site (e.g. via GitHub Pages).
+a browser or serve `expenses/` separately as a static site. The repository's
+current GitHub Pages setting publishes only `docs/`.
 
 ## What it does
 
