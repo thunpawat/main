@@ -1,6 +1,6 @@
 # Canvas art
 
-A generated art piece, following the same pattern as `profile/`, `todo/`,
+A generated art piece, following the same pattern as `docs/`, `todo/`,
 and `expenses/` — a standalone addition to this fork used as a personal
 site repo, independent of the docs app.
 
