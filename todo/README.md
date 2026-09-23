@@ -1,10 +1,10 @@
 # To-do list
 
 `index.html` is a standalone, self-contained personal to-do list. Like
-`profile/` and `expenses/`, it has no build dependency on the rest of this
+`docs/` and `expenses/`, it has no build dependency on the rest of this
 repository (a fork of [github/docs](https://github.com/github/docs)) — open
-the file directly in a browser, or serve `todo/` as a static site (e.g. via
-GitHub Pages).
+the file directly in a browser or serve `todo/` separately as a static site.
+The repository's current GitHub Pages setting publishes only `docs/`.
 
 ## What it does
 
